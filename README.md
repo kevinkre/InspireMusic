@@ -3,7 +3,7 @@ InspireMusic is a PyTorch library designed for research on music, song, and audi
 
 [![demo](https://img.shields.io/badge/InspireMusic-Code-green.svg)](https://inspiremusic.github.io/)
 [![demo](https://img.shields.io/badge/InspireMusic-Demo-brightgreen.svg)](https://inspiremusic.github.io/)
-[![model](https://img.shields.io/badge/%F0%9F%A4%97%20InspireMusic-Models-orange.svg)](https://huggingface.co/FunAudioLLM/InspireMusic)
+[![model](https://img.shields.io/badge/%F0%9F%A4%97%20InspireMusic-Models-orange.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-Base)
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-lightgrey.svg)](https://arxiv.org/abs/)
 
 ## 👉🏻 [InspireMusic Demos](https://inspiremusic.github.io) 👈🏻
@@ -99,21 +99,20 @@ If you are expert in this field, and you are only interested in training your ow
 ``` sh
 # git模型下载，请确保已安装git lfs
 mkdir -p pretrained_models
-git clone https://www.modelscope.cn/iic/InspireMusic.git pretrained_models/InspireMusic
+git clone https://www.modelscope.cn/iic/InspireMusic.git pretrained_models/InspireMusic-Base
 ```
 
 ### Available Models
 Currently, we open source the music generation models only supporting 24000Hz mono channel audio. 
 The table below presents the links to the ModelScope and Huggingface model hub. More models will be available soon.
 
-| Model name            | Model Links                                                                                                                                                                                 | Sample Rate (Hz)| Remarks                                        |
-|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|------------------------------------------------|
-| InspireMusic-Base     | [![model](https://img.shields.io/badge/ModelScope-Model-orange.svg)](https://huggingface.co/FunAudioLLM/InspireMusic) [![model](https://img.shields.io/badge/HuggingFace-Model-orange.svg)]() | 75              | Pre-trained music generation model, 24kHz mono |
-| InspireMusic-Base-SFT | [![model](https://img.shields.io/badge/ModelScope-Model-orange.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-orange.svg)]()                                              | 75              | Music generation model w/ SFT, 24kHz mono      |
-| InspireMusic-1.5B     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | 75              | Pre-trained Music Generation 1.5B Model, 24kHz mono       |
-| InspireSong-Base      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | 75              | Pre-trained Song Generation Base Model, 24kHz mono         |
-| InspireSong-1.5B      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | 75              | Pre-trained Song Generation 1.5B Model, 24kHz mono         |
-| InspireAudio-1.5B     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | 75              | Pre-trained Audio Generation 1.5B Model, 24kHz mono        |
+| Model name            | Model Links                                                                                                                                                                                 | Remarks                                        |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|------------------------------------------------|
+| InspireMusic-Base     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)](https://huggingface.co/FunAudioLLM/InspireMusic) [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]() | Pre-trained Music Generation Model, 24kHz mono |
+| InspireMusic-1.5B     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | Pre-trained Music Generation 1.5B Model, 24kHz mono       |
+| InspireSong-Base      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | Pre-trained Song Generation Base Model, 24kHz mono         |
+| InspireSong-1.5B      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | Pre-trained Song Generation 1.5B Model, 24kHz mono         |
+| InspireAudio-1.5B     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                        | Pre-trained Audio Generation 1.5B Model, 24kHz mono        |
 
 ## Basic Usage
 
