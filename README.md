@@ -217,9 +217,10 @@ python inspiremusic/bin/inference.py --mode sft \
 
 You can directly discuss on [Github Issues](https://github.com/FunAudioLLM/InspireMusic/issues).
 
-You can also scan the QR code to join our official Dingding chat group.
+You can also scan the QR code to join our official chat group.
 
 <img src="./asset/dingding.png" width="250px">
+<img src="./asset/QR.jpg" width="250px">
 
 ## Acknowledge
 
