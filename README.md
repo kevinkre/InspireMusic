@@ -240,7 +240,7 @@ You can also scan the QR code to join our official chat group.
 <p align="center">
   <img alt="Light" src="./asset/dingding.png" width="30%" />
   <img alt="Light" src="./asset/dingtalk.png" width="30%" /> 
-  <img alt="Light" src="./asset/QR.jpg" width="25%" />
+  <img alt="Light" src="./asset/QR.jpg" width="26%" />
 </p>
 
 ## Acknowledge
