@@ -25,7 +25,7 @@ echo "Run inference."
 expr_name="inspiremusic_${dataset_name}"
 for mode in sft; do
   python inspiremusic/bin/inference.py --mode $mode \
-      --gpu 1 \
+      --gpu 0 \
       --config conf/inspiremusic_base_fp16.yaml \
       --prompt_data data/${dataset_name}/parquet/data.list \
       --flow_model $pretrained_model_dir/flow.pt \
