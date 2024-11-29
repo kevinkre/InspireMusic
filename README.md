@@ -4,8 +4,8 @@
 
 InspireMusic is a PyTorch library designed for research on music, song, and audio generation. It provides both inference and training code for AI generative models that produce high-quality music. The library features a unified framework that incorporates autoregressive Transformer and conditional flow-matching modeling, enabling controllable generation of music, songs, and audio with textual and music structural conditioning, along with neural audio tokenizers. Currently, InspireMusic supports tasks like text-to-music generation, with plans to extend capabilities to text-to-song and text-to-audio generation in the future.
 
-[![demo](https://img.shields.io/badge/InspireMusic-Code-green.svg)](https://iris2c.github.io/InspireMusic)
-[![demo](https://img.shields.io/badge/InspireMusic-Demo-brightgreen.svg)](https://inspiremusic.github.io/)
+[![code](https://img.shields.io/badge/InspireMusic-Code-green.svg)](https://github.com/FunAudioLLM/InspireMusic)
+[![demo](https://img.shields.io/badge/InspireMusic-Demo-brightgreen.svg)](https://iris2c.github.io/InspireMusic)
 [![model](https://img.shields.io/badge/%F0%9F%A4%97%20InspireMusic-Models-orange.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-Base)
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-lightgrey.svg)](https://arxiv.org/abs/)
 
