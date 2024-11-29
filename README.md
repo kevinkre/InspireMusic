@@ -108,7 +108,7 @@ The table below presents the links to the ModelScope and Huggingface model hub. 
 
 | Model name            | Model Links                                                                                                                                                                               | Remarks                                        |
 |------------------------------|-------------------------------------------------------|-------------|
-| InspireMusic-Base     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)](https://huggingface.co/FunAudioLLM/InspireMusic) [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]() | Pre-trained Music Generation Model, 24kHz mono |
+| InspireMusic-Base     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-Base) [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]() | Pre-trained Music Generation Model, 24kHz mono |
 | InspireMusic-1.5B     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                      | Pre-trained Music Generation 1.5B Model, 24kHz mono       |
 | InspireSong-Base      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                      | Pre-trained Song Generation Base Model, 24kHz mono         |
 | InspireSong-1.5B      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                      | Pre-trained Song Generation 1.5B Model, 24kHz mono         |
@@ -219,8 +219,11 @@ You can directly discuss on [Github Issues](https://github.com/FunAudioLLM/Inspi
 
 You can also scan the QR code to join our official chat group.
 
-<img src="./asset/dingding.png" width="250px">
-<img src="./asset/QR.jpg" width="250px">
+<p align="center">
+  <img alt="Light" src="./asset/dingding.png" width="30%" />
+  <img alt="Light" src="./asset/dingtalk.png" width="30%" /> 
+  <img alt="Light" src="./asset/QR.jpg" width="30%" />
+</p>
 
 ## Acknowledge
 
