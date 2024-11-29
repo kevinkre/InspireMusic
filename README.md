@@ -11,9 +11,12 @@ InspireMusic is a PyTorch library designed for research on music, song, and audi
 
 ### 👉🏻 [InspireMusic Demos](https://iris2c.github.io/InspireMusic) 👈🏻
 
-For `SenseVoice`, visit [SenseVoice repo](https://github.com/FunAudioLLM/SenseVoice) and [SenseVoice space](https://www.modelscope.cn/studios/iic/SenseVoice).
+![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 🙏 
 
-For `CosyVoice`, visit [CosyVoice repo](https://github.com/FunAudioLLM/CosyVoice) and [CosyVoice space](https://www.modelscope.cn/studios/iic/CosyVoice).
+#### Friend Links
+Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
+
+`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
 
 <a name="Highligts"></a>
 ## Highlights
@@ -22,7 +25,6 @@ For `CosyVoice`, visit [CosyVoice repo](https://github.com/FunAudioLLM/CosyVoice
 - Controllable with text prompts, music genres, music structures, etc.
 - Convenient Finetuning and Inference: Provide convenient finetuning and inference scripts and strategies, allowing users to easily their own music generation models according to different scenarios.
 - High audio quality.
-
 
 <a name="What's News"></a>
 ## What's New 🔥
