@@ -21,14 +21,14 @@ For `CosyVoice`, visit [CosyVoice repo](https://github.com/FunAudioLLM/CosyVoice
 - A unified framework for music, song, audio genereation.
 - Controllable with text prompts, music genres, music structures, etc.
 - Convenient Finetuning and Inference: Provide convenient finetuning and inference scripts and strategies, allowing users to easily their own music generation models according to different scenarios.
-- High audio quality
+- High audio quality.
 
 
 <a name="What's News"></a>
 ## What's New 🔥
 
 [//]: # (- 2024/12: The [InspireMusic-Base]&#40;https://huggingface.co/FunAudioLLM/InspireMusic-Base&#41; voice understanding model is open-sourced, which offers high quality, diverse text style, music structure, music genre control capability.  )
-- 2024/11: We are excited to open-source the [Code repo](https://github.com/FunAudioLLM/InspireMusic) and [Demos](https://iris2c.github.io/InspireMusic) of **InspireMusic**. The **InspireMusic**, a unified framework of music, song, audio generation, with text-to-music, music structure, music genre and timestamps control. InspireMusic excels in music generation and instruction-following capabilities. 
+- 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities. 
 
 ## Installation
 
@@ -239,8 +239,8 @@ You can also scan the QR code to join our official chat group.
 
 <p align="center">
   <img alt="Light" src="./asset/dingding.png" width="30%" />
-  <img alt="Light" src="./asset/dingtalk.png" width="30%" /> 
-  <img alt="Light" src="./asset/QR.jpg" width="26%" />
+  <img alt="Light" src="./asset/dingtalk.png" width="29%" /> 
+  <img alt="Light" src="./asset/QR.jpg" width="25%" />
 </p>
 
 ## Acknowledge
