@@ -13,11 +13,6 @@ InspireMusic is a PyTorch library designed for research on music, song, and audi
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 🙏 
 
-#### Friend Links
-Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
-
-`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
-
 <a name="Highligts"></a>
 ## Highlights
 **InspireMusic** focuses on music generation, song generation, audio generation.
@@ -31,6 +26,11 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 
 [//]: # (- 2024/12: The [InspireMusic-Base]&#40;https://huggingface.co/FunAudioLLM/InspireMusic-Base&#41; voice understanding model is open-sourced, which offers high quality, diverse text style, music structure, music genre control capability.  )
 - 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities. 
+
+#### Friend Links
+Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
+
+`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
 
 ## Installation
 
