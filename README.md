@@ -1,6 +1,6 @@
 # InspireMusic
 
-[![SVG Banners](https://svg-banners.vercel.app/api?type=origin&text1=InspireMusic🤠&text2=💖%20A%20Fundamental%20Music%20Audio%20Generation%20Toolkit&width=800&height=210)](https://github.com/Akshay090/svg-banners)
+[![SVG Banners](https://svg-banners.vercel.app/api?type=origin&text1=Inspire%20Music🤠&text2=💖%20A%20Fundamental%20Music%20Song%20Audio%20Generation%20Toolkit&width=800&height=210)](https://github.com/Akshay090/svg-banners)
 
 InspireMusic is a PyTorch library designed for research on music, song, and audio generation. It provides both inference and training code for AI generative models that produce high-quality music. The library features a unified framework that incorporates autoregressive Transformer and conditional flow-matching modeling, enabling controllable generation of music, songs, and audio with textual and music structural conditioning, along with neural audio tokenizers. Currently, InspireMusic supports tasks like text-to-music generation, with plans to extend capabilities to text-to-song and text-to-audio generation in the future.
 
@@ -9,37 +9,29 @@ InspireMusic is a PyTorch library designed for research on music, song, and audi
 [![model](https://img.shields.io/badge/%F0%9F%A4%97%20InspireMusic-Models-orange.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-Base)
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-lightgrey.svg)](https://arxiv.org/abs/)
 
-## 👉🏻 [InspireMusic Demos](https://iris2c.github.io/InspireMusic) 👈🏻
+### 👉🏻 [InspireMusic Demos](https://iris2c.github.io/InspireMusic) 👈🏻
 
 For `SenseVoice`, visit [SenseVoice repo](https://github.com/FunAudioLLM/SenseVoice) and [SenseVoice space](https://www.modelscope.cn/studios/iic/SenseVoice).
 
 For `CosyVoice`, visit [CosyVoice repo](https://github.com/FunAudioLLM/CosyVoice) and [CosyVoice space](https://www.modelscope.cn/studios/iic/CosyVoice).
 
+<a name="Highligts"></a>
+## Highlights
+**SenseVoice** focuses on high-accuracy multilingual speech recognition, speech emotion recognition, and audio event detection.
+- **Multilingual Speech Recognition:** Trained with over 400,000 hours of data, supporting more than 50 languages, the recognition performance surpasses that of the Whisper model.
+- **Rich transcribe:** 
+  - Possess excellent emotion recognition capabilities, achieving and surpassing the effectiveness of the current best emotion recognition models on test data.
+  - Offer sound event detection capabilities, supporting the detection of various common human-computer interaction events such as bgm, applause, laughter, crying, coughing, and sneezing.
+- **Efficient Inference:** The SenseVoice-Small model utilizes a non-autoregressive end-to-end framework, leading to exceptionally low inference latency. It requires only 70ms to process 10 seconds of audio, which is 15 times faster than Whisper-Large.
+- **Convenient Finetuning:** Provide convenient finetuning scripts and strategies, allowing users to easily address long-tail sample issues according to their business scenarios.
+- **Service Deployment:** Offer service deployment pipeline,  supporting multi-concurrent requests, with client-side languages including Python, C++, HTML, Java, and C#, among others.
 
-## Roadmap
 
-- [ ] 2024/12
-  - [ ] 75Hz InspireMusic base model for music generation
-  - [ ] Support song generation task
-    
-- [ ] 2025/01
-    - [ ] 75Hz InspireSong model for song generation
+<a name="What's News"></a>
+## What's New 🔥
 
-- [ ] 2025/02
-    - [ ] Support audio generation task 
-    - [ ] 75Hz InspireMusic-1.5B model for music generation
-
-- [ ] 2025/03
-    - [ ] 75Hz InspireAudio model for music and audio generation
-
-- [ ] TBD
-
-    - [ ] 25Hz InspireMusic model
-    - [ ] Support 48kHz stereo audio
-    - [ ] Streaming inference mode support
-    - [ ] Support more instruction mode, multi-lingual instructions
-    - [ ] InspireSong trained with more multi-lingual data
-    - [ ] More...
+[//]: # (- 2024/12: The [InspireMusic-Base]&#40;https://huggingface.co/FunAudioLLM/InspireMusic-Base&#41; voice understanding model is open-sourced, which offers high quality, diverse text style, music structure, music genre control capability.  )
+- 2024/11: We are excited to open-source the [Code repo](https://github.com/FunAudioLLM/InspireMusic) and [Demos](https://iris2c.github.io/InspireMusic) of **InspireMusic**. The **InspireMusic**, a unified framework of music, song, audio generation, with text-to-music, music structure, music genre and timestamps control. InspireMusic excels in music generation and instruction-following capabilities. 
 
 ## Installation
 
@@ -216,6 +208,32 @@ python inspiremusic/bin/inference.py --mode sft \
       --max_generate_audio_seconds 30 
 ```
 
+## Roadmap
+
+- [ ] 2024/12
+  - [ ] 75Hz InspireMusic base model for music generation
+  - [ ] Support song generation task
+    
+- [ ] 2025/01
+    - [ ] 75Hz InspireSong model for song generation
+
+- [ ] 2025/02
+    - [ ] Support audio generation task 
+    - [ ] 75Hz InspireMusic-1.5B model for music generation
+
+- [ ] 2025/03
+    - [ ] 75Hz InspireAudio model for music and audio generation
+
+- [ ] TBD
+
+    - [ ] 25Hz InspireMusic model
+    - [ ] Support 48kHz stereo audio
+    - [ ] Streaming inference mode support
+    - [ ] Support more instruction mode, multi-lingual instructions
+    - [ ] InspireSong trained with more multi-lingual data
+    - [ ] More...
+
+
 ## Discussion & Communication
 
 You can directly discuss on [Github Issues](https://github.com/FunAudioLLM/InspireMusic/issues).
@@ -224,8 +242,8 @@ You can also scan the QR code to join our official chat group.
 
 <p align="center">
   <img alt="Light" src="./asset/dingding.png" width="30%" />
-  <img alt="Light" src="./asset/dingtalk.png" width="30%" /> 
-  <img alt="Light" src="./asset/QR.jpg" width="30%" />
+  <img alt="Light" src="./asset/dingtalk.png" width="29%" /> 
+  <img alt="Light" src="./asset/QR.jpg" width="27%" />
 </p>
 
 ## Acknowledge
