@@ -11,26 +11,21 @@ InspireMusic is a PyTorch library designed for research on music, song, and audi
 
 ### 👉🏻 [InspireMusic Demos](https://iris2c.github.io/InspireMusic) 👈🏻
 
-![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 🙏 
+[//]: # (![GitHub Repo stars]&#40;https://img.shields.io/github/stars/FunAudioLLM/InspireMusic&#41; Please support our community project 💖 by starring it on GitHub 🙏 )
 
 <a name="Highligts"></a>
 ## Highlights
-**InspireMusic** focuses on music generation, song generation, audio generation.
-- A unified framework for music, song, audio genereation.
+**InspireMusic** focuses on music generation, song generation and audio generation.
+- A unified framework for music/song/audio genereation.
 - Controllable with text prompts, music genres, music structures, etc.
-- Convenient Finetuning and Inference: Provide convenient finetuning and inference scripts and strategies, allowing users to easily their own music generation models according to different scenarios.
+- Convenient Fine-tuning and Inference: Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily their music generation models.
 - High audio quality.
 
 <a name="What's News"></a>
 ## What's New 🔥
 
 [//]: # (- 2024/12: The [InspireMusic-Base]&#40;https://huggingface.co/FunAudioLLM/InspireMusic-Base&#41; voice understanding model is open-sourced, which offers high quality, diverse text style, music structure, music genre control capability.  )
-- 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities. 
-
-#### Friend Links
-Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
-
-`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
+- 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities.
 
 ## Installation
 
@@ -97,7 +92,7 @@ git clone https://www.modelscope.cn/iic/InspireMusic.git pretrained_models/Inspi
 ```
 
 ### Available Models
-Currently, we open source the music generation models only supporting 24000Hz mono channel audio. 
+Currently, we open source the music generation models only supporting 24KHz mono channel audio. 
 The table below presents the links to the ModelScope and Huggingface model hub. More models will be available soon.
 
 | Model name            | Model Links                                                                                                                                                                               | Remarks                                        |
@@ -110,7 +105,7 @@ The table below presents the links to the ModelScope and Huggingface model hub. 
 
 ## Basic Usage
 
-At the moment, InspireMusic contains the training code and inference code for Music Generation. More tasks such as song generation and audio generation will be supported in future.
+At the moment, InspireMusic contains the training code and inference code for [music generation](https://github.com/FunAudioLLM/InspireMusic/tree/main/examples/music_generation). More tasks such as song generation and audio generation will be supported in future.
 
 ### Quick Start
 
@@ -232,6 +227,11 @@ python inspiremusic/bin/inference.py --mode sft \
     - [ ] InspireSong trained with more multi-lingual data
     - [ ] More...
 
+
+### Friend Links
+Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
+
+`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
 
 ## Discussion & Communication
 
