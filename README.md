@@ -275,11 +275,9 @@ Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, 
       <td style="text-align:center;">
         <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/FunAudioLLM-DingTalk-d9d9d9"></a>
       </td>
-      <td style="width:5px;"></td> 
       <td style="text-align:center;">
         <a href="./asset/QR.jpg"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/InspireMusic-DingTalk-d9d9d9"></a>
       </td>
-      <td style="width:5px;"></td> 
       <td style="text-align:center;">
         <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/InspireMusic-WeChat-d9d9d9"></a>
       </td>
@@ -288,13 +286,11 @@ Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, 
        <td style="text-align:center;">
       <img alt="Light" src="./asset/dingding.png" width="100%" />
        </td>
-      <td style="width:5px;"></td> 
       <td style="text-align:center;">
       <img alt="Light" src="./asset/dingtalk.png" width="100%" /> 
        </td>
-      <td style="width:5px;"></td> 
       <td style="text-align:center;">
-      <img alt="Light" src="./asset/QR.jpg" width="100%" />
+      <img alt="Light" src="./asset/QR.jpg" width="90%" />
       </td>
     </tr>
   </table>
