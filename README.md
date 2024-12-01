@@ -254,27 +254,34 @@ python inspiremusic/bin/inference.py --mode sft \
 ### Friend Links
 Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
 
-`ClearVoice`: [repo](https://github.com/modelscope/ClearerVoice-Studio) & [space](https://huggingface.co/spaces/alibabasglab/ClearVoice) | `SenseVoice`: [repo](https://github.com/FunAudioLLM/SenseVoice) & [space](https://www.modelscope.cn/studios/iic/SenseVoice) | `CosyVoice`: [repo](https://github.com/FunAudioLLM/CosyVoice) & [space](https://www.modelscope.cn/studios/iic/CosyVoice)
+<p align="center">
+<a href="https://github.com/modelscope/ClearerVoice-Studio" target="_blank">
+        <img alt="Demo" src="https://img.shields.io/badge/Repo | Space-ClearVoice?labelColor=&label=ClearVoice&color=green"></a>
+<a href="https://github.com/FunAudioLLM/CosyVoice" target="_blank">
+        <img alt="Demo" src="https://img.shields.io/badge/Repo | Space-CosyVoice?labelColor=&label=CosyVoice&color=green"></a>
+<a href="https://github.com/FunAudioLLM/SenseVoice" target="_blank">
+        <img alt="Demo" src="https://img.shields.io/badge/Repo | Space-SenseVoice?labelColor=&label=SenseVoice&color=green"></a>
+</p>
 
 ## Discussion & Communication
 
 You can directly discuss on [Github Issues](https://github.com/FunAudioLLM/InspireMusic/issues).
 
-You can also scan the QR code to join our official chat group.
+Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, technology, and user experience feedback. You may scan the following QR codes to join our official chat groups accordlingly. 
 
 <p align="center">
   <table>
     <tr>
       <td style="text-align:center;">
-        <a href="./asset/dingding.png"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/FunAudioLLM-DingTalk-d9d9d9"></a>
+        <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/FunAudioLLM-DingTalk-d9d9d9"></a>
       </td>
       <td style="width:5px;"></td> 
       <td style="text-align:center;">
-        <a href="./asset/dingding.png"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/InspireMusic-DingTalk-d9d9d9"></a>
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/InspireMusic-DingTalk-d9d9d9"></a>
       </td>
       <td style="width:5px;"></td> 
       <td style="text-align:center;">
-        <a href="./asset/dingding.png"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/InspireMusic-WeChat-d9d9d9"></a>
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/InspireMusic-WeChat-d9d9d9"></a>
       </td>
     </tr>
     <tr>
@@ -292,16 +299,6 @@ You can also scan the QR code to join our official chat group.
     </tr>
   </table>
 </p>
-
-[//]: # (<p align="center">)
-
-[//]: # (  <img alt="Light" src="./asset/dingding.png" width="30%" />)
-
-[//]: # (  <img alt="Light" src="./asset/dingtalk.png" width="29.5%" /> )
-
-[//]: # (  <img alt="Light" src="./asset/QR.jpg" width="25%" />)
-
-[//]: # (</p>)
 
 ## Acknowledge
 
