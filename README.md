@@ -33,7 +33,16 @@
 [//]: # (        <img alt="Discussion posts" src="https://img.shields.io/github/discussions/FunAudioLLM/InspireMusic?labelColor=%20%239b8afb&color=%20%237a5af8"></a>)
 </p>
 
-InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio generation using the PyTorch library. It facilitates research in these areas through a unified audio tokenization and detokenization process integrated with an LLM framework. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
+InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio generation using the PyTorch library. 
+
+## Introduction
+> [!Note]
+> This repo contains the algorithm infrastructure and some simple examples.
+
+> [!Tip]
+> For the explore the performance of InspireMusic, please refer to our [InspireMusic Demo Page](https://iris2c.github.io/InspireMusic). Space will coming soon.
+
+InspireMusic is a unified music, song and audio generation framework through the audio tokenization and detokenization process integrated with a large autoregressive transformer. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
 
 <a name="Highligts"></a>
 ## Highlights
