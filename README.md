@@ -4,19 +4,22 @@
 
 <p align="center">
  <a href="https://iris2c.github.io/InspireMusic" target="_blank">
-        <img alt="Demo" src="https://img.shields.io/badge/Demo%20👍🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
+        <img alt="Demo" src="https://img.shields.io/badge/Demo%20👆🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372eb&label=InspireMusic&color=%20%235462eb"></a>
+        <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372EB&label=InspireMusic&color=%20%235462eb"></a>
 <a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">
-        <img alt="Model" src="https://img.shields.io/badge/Model%20💻-InspireMusic?labelColor=%20%23FDA599&label=InspireMusic&color=orange"></a>
+        <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>
 <a href="https://arxiv.org/abs/" target="_blank">
-        <img alt="Paper" src="https://img.shields.io/badge/Paper%20📄-arXiv?labelColor=lightgrey&label=arXiv&color=grey"></a>
+        <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
     <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
-    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Static Badge" src="https://img.shields.io/badge/v0.1-version?logo=free&color=%20%23155EEF&label=version&labelColor=%20%23528bff"></a>
-<a href="https://github.com/FunAudioLLM/InspireMusic/graphs/commit-activity" target="_blank">
-<img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/FunAudioLLM/InspireMusic?labelColor=%20%2332b583&color=%20%2312b76a"></a>
+
+[//]: # (    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
+
+[//]: # (        <img alt="Static Badge" src="https://img.shields.io/badge/v0.1-version?logo=free&color=%20%23155EEF&label=version&labelColor=%20%23528bff"></a>)
+[//]: # (<a href="https://github.com/FunAudioLLM/InspireMusic/graphs/commit-activity" target="_blank">)
+
+[//]: # (<img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/FunAudioLLM/InspireMusic?labelColor=%20%2332b583&color=%20%2312b76a"></a>)
 
 [//]: # (    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
 
