@@ -263,11 +263,9 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
         <img alt="Demo" src="https://img.shields.io/badge/Repo | Space-SenseVoice?labelColor=&label=SenseVoice&color=green"></a>
 </p>
 
-## Discussion & Communication
-
-You can directly discuss on [Github Issues](https://github.com/FunAudioLLM/InspireMusic/issues).
-
-Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, technology, and user experience feedback. You may scan the following QR codes to join our official chat groups accordlingly. 
+## Community & Discussion
+* Please support our community project 🌟 by starring it on GitHub 🙏
+* Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, technology, and user experience feedback. You may scan the following QR codes to join our official chat groups accordlingly. 
 
 <p align="center">
   <table>
@@ -295,6 +293,9 @@ Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, 
     </tr>
   </table>
 </p>
+
+* [Github Discussion](https://github.com/FunAudioLLM/InspireMusic/discussions). Best for sharing feedback and asking questions.
+* [GitHub Issues](https://github.com/FunAudioLLM/InspireMusic/issues). Best for bugs you encounter using InspireMusic, and feature proposals.
 
 ## Acknowledge
 
