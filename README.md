@@ -14,7 +14,9 @@
         <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
-    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
+<a href="https://discord.gg/nSPpRU7fRr" target="_blank">
+        <img src="https://img.shields.io/badge/discord-chat?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on Discord"></a>
+<a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
 
 [//]: # (    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
@@ -47,7 +49,7 @@ InspireMusic is a unified music, song and audio generation framework through the
 <a name="Highligts"></a>
 ## Highlights
 **InspireMusic** focuses on music generation, song generation and audio generation.
-- A unified framework for music/song/audio genereation.
+- A unified framework for music/song/audio generation.
 - Controllable with text prompts, music genres, music structures, etc.
 - Convenient Fine-tuning and Inference: Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily their music generation models.
 - High audio quality.
@@ -66,7 +68,7 @@ InspireMusic is a unified music, song and audio generation framework through the
 - Clone the repo
 ``` sh
 git clone --recursive https://github.com/FunAudioLLM/InspireMusic.git
-# If you failed to clone submodule due to network failures, please run following command until success
+# If you failed to clone submodule due to network failures, please run the following command until success
 cd InspireMusic
 git submodule update --init --recursive
 ```
@@ -80,7 +82,7 @@ InspireMusic requires Python 3.8, PyTorch 2.1.0. To install InspireMusic, you ca
 conda create -n inspiremusic python=3.8
 conda activate inspiremusic
 cd InspireMusic
-# pynini is required by WeTextProcessing, use conda to install it as it can be executed on all platform.
+# pynini is required by WeTextProcessing, use conda to install it as it can be executed on all platforms.
 conda install -y -c conda-forge pynini==2.1.5
 pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
 # install flash attention to speedup training
@@ -115,7 +117,7 @@ sudo yum install ffmpeg
 
 We strongly recommend that you download our pretrained `InspireMusic model`.
 
-If you are expert in this field, and you are only interested in training your own InspireMusic model from scratch, you can skip this step.
+If you are an expert in this field, and you are only interested in training your own InspireMusic model from scratch, you can skip this step.
 
 ``` sh
 # git模型下载，请确保已安装git lfs
@@ -124,7 +126,7 @@ git clone https://www.modelscope.cn/iic/InspireMusic.git pretrained_models/Inspi
 ```
 
 ### Available Models
-Currently, we open source the music generation models only supporting 24KHz mono channel audio. 
+Currently, we open source the music generation models only that supporting 24KHz mono channel audio. 
 The table below presents the links to the ModelScope and Huggingface model hub. More models will be available soon.
 
 | Model name            | Model Links                                                                                                                                                                               | Remarks                                        |
