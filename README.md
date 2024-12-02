@@ -282,10 +282,10 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
   <table>
     <tr>
       <td style="text-align:center;">
-        <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/FunAudioLLM-DingTalk-d9d9d9"></a>
+        <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/DingTalk-FunAudioLLM?labelColor=lightblue&label=FunAudioLLM&color=blue"></a>
       </td>
       <td style="text-align:center;">
-        <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/InspireMusic-WeChat-d9d9d9"></a>
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/WeChat-InspireMusic?labelColor=lightblue&label=InspireMusic&color=blue"></a>
       </td>
     </tr>
     <tr>
