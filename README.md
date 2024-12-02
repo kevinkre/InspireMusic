@@ -288,7 +288,7 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
     </tr>
     <tr>
        <td style="text-align:center;">
-      <img alt="Light" src="./asset/dingding.png" width="65%" />
+      <img alt="Light" src="./asset/dingding.png" width="68%" />
       <td style="text-align:center;">
       <img alt="Light" src="./asset/QR.jpg" width="58%" />
       </td>
