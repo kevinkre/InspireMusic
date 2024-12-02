@@ -276,7 +276,7 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 
 ## Community & Discussion
 * Please support our community project 🌟 by starring it on GitHub 🙏
-* Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, technology, and user experience feedback. You may scan the following QR codes to join our official chat groups accordlingly. 
+* Welcome to join our DingTalk and WeChat groups to share and discuss algorithms, technology, and user experience feedback. You may scan the following QR codes to join our official chat groups accordingly. 
 
 <p align="center">
   <table>
