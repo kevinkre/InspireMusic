@@ -21,7 +21,7 @@ from omegaconf import DictConfig
 from inspiremusic.utils.mask import make_pad_mask
 from inspiremusic.music_tokenizer.vqvae import VQVAE
 
-class MaskedDiffWithXvec(torch.nn.Module):
+class MaskedDiff(torch.nn.Module):
     def __init__(self,
                  input_size: int = 512,
                  output_size: int = 80,
@@ -69,20 +69,20 @@ class MaskedDiffWithXvec(torch.nn.Module):
             device: torch.device,
     ) -> Dict[str, Optional[torch.Tensor]]:
 
-        speech_token = batch['speech_token'].to(device)
-        speech_token_len = batch['speech_token_len'].to(device)
-        speech_token  = speech_token.view(speech_token.size(0),-1,self.num_codebooks)
+        audio_token = batch['acoustic_token'].to(device)
+        audio_token_len = batch['acoustic_token_len'].to(device)
+        audio_token  = audio_token.view(audio_token.size(0),-1,self.num_codebooks)
         if "semantic_token" not in batch:
-            token = speech_token[:,:,0]
-            token_len = (speech_token_len/self.num_codebooks).long()
+            token = audio_token[:,:,0]
+            token_len = (audio_token_len/self.num_codebooks).long()
     
         else:
             token = batch['semantic_token'].to(device)
-            token_len = batch['speech_token_len'].to(device)
+            token_len = batch['semantic_token_len'].to(device)
         
         with torch.no_grad():
-            feat = self.quantizer.embed(speech_token)
-            feat_len = (speech_token_len/self.num_codebooks).long()
+            feat = self.quantizer.embed(audio_token)
+            feat_len = (audio_token_len/self.num_codebooks).long()
 
         token_x = self.input_embedding(token) 
 

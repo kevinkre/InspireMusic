@@ -35,7 +35,7 @@ llm: !new:inspiremusic.llm.plm.PLM
         tau_r: 0.1
     train_cfg_ratio: 0.2
     infer_cfg_ratio: 3.0
-flow: !new:inspiremusic.flow.flow.MaskedDiffWithXvec
+flow: !new:inspiremusic.flow.flow.MaskedDiff
     input_size: 256
     output_size: 80
     spk_embed_dim: !ref <spk_embed_dim>
