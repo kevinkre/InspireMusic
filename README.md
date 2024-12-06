@@ -2,8 +2,16 @@
 
 <p align="center">
  <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="InspireMusic" src="https://svg-banners.vercel.app/api?type=origin&text1=Inspire%20Music🎶&text2=🤗%20A%20Fundamental%20Music%20Song%20Audio%20Generation%20Toolkit&width=800&height=210"></a>
+        <img alt="logo" src="./asset/logo.png" width="100%"></a>
 </p>
+
+[//]: # (<p align="center">)
+
+[//]: # ( <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
+
+[//]: # (        <img alt="InspireMusic" src="https://svg-banners.vercel.app/api?type=origin&text1=Inspire%20Music🎶&text2=🤗%20A%20Fundamental%20Music%20Song%20Audio%20Generation%20Toolkit&width=800&height=210"></a>)
+
+[//]: # (</p>)
 
 <p align="center">
  <a href="https://iris2c.github.io/InspireMusic" target="_blank">
