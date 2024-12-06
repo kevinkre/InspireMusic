@@ -17,11 +17,23 @@
         <img alt="Demo" src="https://img.shields.io/badge/Demo%20👈🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372EB&label=InspireMusic&color=%20%235462eb"></a>
+
 <a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">
-        <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>
+        <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic-d9d9d9"></a>
+
 <a href="https://arxiv.org/abs/" target="_blank">
-        <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
+        <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv-d9d9d9"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
+
+[//]: # (<a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">)
+
+[//]: # (        <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>)
+
+[//]: # (<a href="https://arxiv.org/abs/" target="_blank">)
+
+[//]: # (        <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>)
+
+[//]: # (<a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
 
 [//]: # (        <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>)
 
