@@ -1,5 +1,4 @@
-# InspireMusic
-
+[//]: # (# InspireMusic)
 <p align="center">
  <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="logo" src="./asset/logo.png" width="100%"></a>
