@@ -21,10 +21,13 @@
         <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
-<a href="https://github.com/FunAudioLLM/InspireMusic/blob/main/asset/QR.jpg" target="_blank">
-        <img src="https://img.shields.io/badge/group%20chat-group?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on WeChat"></a>
-<a href="https://discord.gg/nSPpRU7fRr" target="_blank">
-        <img src="https://img.shields.io/badge/discord-chat?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on Discord"></a>
+
+[//]: # (<a href="https://github.com/FunAudioLLM/InspireMusic/blob/main/asset/QR.jpg" target="_blank">)
+
+[//]: # (        <img src="https://img.shields.io/badge/group%20chat-group?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on WeChat"></a>)
+[//]: # (<a href="https://discord.gg/nSPpRU7fRr" target="_blank">)
+
+[//]: # (        <img src="https://img.shields.io/badge/discord-chat?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on Discord"></a>)
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
 
@@ -294,12 +297,17 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
         <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/DingTalk-FunAudioLLM?labelColor=lightblue&label=FunAudioLLM&color=blue"></a>
       </td>
       <td style="text-align:center;">
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/DingTalk-InspireMusic?labelColor=lightblue&label=InspireMusic&color=blue"></a>
+      </td>
+      <td style="text-align:center;">
         <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/WeChat-InspireMusic?labelColor=lightblue&label=InspireMusic&color=blue"></a>
       </td>
     </tr>
     <tr>
        <td style="text-align:center;">
       <img alt="Light" src="./asset/dingding.png" width="68%" />
+      <td style="text-align:center;">
+      <img alt="Light" src="./asset/dingtalk.png" width="68%" />
       <td style="text-align:center;">
       <img alt="Light" src="./asset/QR.jpg" width="58%" />
       </td>
