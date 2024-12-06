@@ -14,7 +14,7 @@
 
 <p align="center">
  <a href="https://iris2c.github.io/InspireMusic" target="_blank">
-        <img alt="Demo" src="https://img.shields.io/badge/Demo%20👆🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
+        <img alt="Demo" src="https://img.shields.io/badge/Demo%20👈🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372EB&label=InspireMusic&color=%20%235462eb"></a>
 <a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">
@@ -67,8 +67,6 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 [//]: # (- 2024/12: The [InspireMusic-Base]&#40;https://huggingface.co/FunAudioLLM/InspireMusic-Base&#41; voice understanding model is open-sourced, which offers high quality, diverse text style, music structure, music genre control capability.  )
 - 2024/11: Welcome to preview 👉🏻 [**InspireMusic Demos**](https://iris2c.github.io/InspireMusic) 👈🏻, more features and models will comming soon. We're excited to share this with you and are working hard to bring even more features and models very soon. Your support and feedback mean a lot to us!
 - 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities.
-
----
 
 ## Introduction
 > [!Note]
