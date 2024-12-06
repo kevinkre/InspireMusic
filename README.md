@@ -52,6 +52,7 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 加⭐支持 🙏 
 
+---
 <a name="Highligts"></a>
 ## Highlights
 **InspireMusic** focuses on music generation, song generation and audio generation.
@@ -60,7 +61,6 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 - Convenient Fine-tuning and Inference: Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily their music generation models.
 - High audio quality.
 
----
 <a name="What's News"></a>
 ## What's New 🔥
 
@@ -69,6 +69,7 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 - 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities.
 
 ---
+
 ## Introduction
 > [!Note]
 > This repo contains the algorithm infrastructure and some simple examples.
@@ -279,7 +280,7 @@ python inspiremusic/bin/inference.py --mode sft \
     - [ ] InspireSong trained with more multi-lingual data
     - [ ] More...
 
-
+---
 ### Friend Links
 Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
 
@@ -324,6 +325,7 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 * [Github Discussion](https://github.com/FunAudioLLM/InspireMusic/discussions). Best for sharing feedback and asking questions.
 * [GitHub Issues](https://github.com/FunAudioLLM/InspireMusic/issues). Best for bugs you encounter using InspireMusic, and feature proposals.
 
+---
 ## Acknowledge
 
 1. We borrowed a lot of code from [CosyVoice](https://github.com/FunAudioLLM/CosyVoice).
