@@ -22,7 +22,8 @@
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
+
+[//]: # (        <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>)
 
 [//]: # (<a href="https://github.com/FunAudioLLM/InspireMusic/blob/main/asset/QR.jpg" target="_blank">)
 
@@ -49,14 +50,7 @@
 
 InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio generation using the PyTorch library. 
 
-## Introduction
-> [!Note]
-> This repo contains the algorithm infrastructure and some simple examples.
-
-> [!Tip]
-> To explore the performance, please refer to [InspireMusic Demo Page](https://iris2c.github.io/InspireMusic). We will open-source InspireMusic models very soon. Space will also coming soon.
-
-InspireMusic is a unified music, song and audio generation framework through the audio tokenization and detokenization process integrated with a large autoregressive transformer. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
+![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 加⭐支持 🙏 
 
 <a name="Highligts"></a>
 ## Highlights
@@ -66,6 +60,7 @@ InspireMusic is a unified music, song and audio generation framework through the
 - Convenient Fine-tuning and Inference: Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily their music generation models.
 - High audio quality.
 
+---
 <a name="What's News"></a>
 ## What's New 🔥
 
@@ -73,6 +68,17 @@ InspireMusic is a unified music, song and audio generation framework through the
 - 2024/11: Welcome to preview 👉🏻 [**InspireMusic Demos**](https://iris2c.github.io/InspireMusic) 👈🏻, more features and models will comming soon. We're excited to share this with you and are working hard to bring even more features and models very soon. Your support and feedback mean a lot to us!
 - 2024/11: We are thrilled to announce the open-sourcing of the **InspireMusic** [code repository](https://github.com/FunAudioLLM/InspireMusic) and [demos](https://iris2c.github.io/InspireMusic). **InspireMusic** is a unified framework for music, song, and audio generation, featuring capabilities such as text-to-music conversion, music structure, genre control, and timestamp management. InspireMusic stands out for its exceptional music generation and instruction-following abilities.
 
+---
+## Introduction
+> [!Note]
+> This repo contains the algorithm infrastructure and some simple examples.
+
+> [!Tip]
+> To explore the performance, please refer to [InspireMusic Demo Page](https://iris2c.github.io/InspireMusic). We will open-source InspireMusic models very soon. Space will also coming soon.
+
+InspireMusic is a unified music, song and audio generation framework through the audio tokenization and detokenization process integrated with a large autoregressive transformer. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
+
+---
 ## Installation
 
 ### Clone
@@ -294,13 +300,13 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
   <table>
     <tr>
       <td style="text-align:center;">
-        <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/DingTalk-FunAudioLLM?labelColor=lightblue&label=FunAudioLLM&color=blue"></a>
+        <a href="./asset/QR.jpg"><img alt="FunAudioLLM in DingTalk" src="https://img.shields.io/badge/FunAudioLLM-DingTalk-d9d9d9"></a>
       </td>
       <td style="text-align:center;">
-        <a href="./asset/QR.jpg"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/DingTalk-InspireMusic?labelColor=lightblue&label=InspireMusic&color=blue"></a>
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in DingTalk" src="https://img.shields.io/badge/InspireMusic-DingTalk-d9d9d9"></a>
       </td>
       <td style="text-align:center;">
-        <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/WeChat-InspireMusic?labelColor=lightblue&label=InspireMusic&color=blue"></a>
+        <a href="./asset/QR.jpg"><img alt="InspireMusic in WeChat" src="https://img.shields.io/badge/InspireMusic-WeChat-d9d9d9"></a>
       </td>
     </tr>
     <tr>
