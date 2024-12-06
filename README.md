@@ -21,6 +21,8 @@
         <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic?labelColor=%20%23FDA199&label=InspireMusic&color=orange"></a>
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv?labelColor=%20%23528bff&label=arXiv&color=%20%23155EEF"></a>
+<a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
+        <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
 
 [//]: # (<a href="https://github.com/FunAudioLLM/InspireMusic/blob/main/asset/QR.jpg" target="_blank">)
 
@@ -28,8 +30,6 @@
 [//]: # (<a href="https://discord.gg/nSPpRU7fRr" target="_blank">)
 
 [//]: # (        <img src="https://img.shields.io/badge/discord-chat?&labelColor=%20%235462eb&color=%20%235462eb" alt="chat on Discord"></a>)
-<a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Githube Star" src="https://img.shields.io/github/stars/FunAudioLLM/InspireMusic"></a>
 
 [//]: # (    <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">)
 
