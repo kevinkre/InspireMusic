@@ -79,7 +79,6 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 
 InspireMusic is a unified music, song and audio generation framework through the audio tokenization and detokenization process integrated with a large autoregressive transformer. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
 
----
 ## Installation
 
 ### Clone
@@ -325,7 +324,6 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 * [Github Discussion](https://github.com/FunAudioLLM/InspireMusic/discussions). Best for sharing feedback and asking questions.
 * [GitHub Issues](https://github.com/FunAudioLLM/InspireMusic/issues). Best for bugs you encounter using InspireMusic, and feature proposals.
 
----
 ## Acknowledge
 
 1. We borrowed a lot of code from [CosyVoice](https://github.com/FunAudioLLM/CosyVoice).
