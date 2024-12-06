@@ -19,10 +19,10 @@
         <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372EB&label=InspireMusic&color=%20%235462eb"></a>
 
 <a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">
-        <img alt="Model" src="https://img.shields.io/badge/Model-InspireMusic-d9d9d9"></a>
+        <img alt="Model" src="https://img.shields.io/badge/InspireMusic-Model-d9d9d9"></a>
 
 <a href="https://arxiv.org/abs/" target="_blank">
-        <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv-d9d9d9"></a>
+        <img alt="Paper" src="https://img.shields.io/badge/arXiv-Paper-d9d9d9"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
 
 [//]: # (<a href="https://huggingface.co/FunAudioLLM/InspireMusic-Base" target="_blank">)
