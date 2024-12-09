@@ -38,7 +38,6 @@ llm: !new:inspiremusic.llm.plm.PLM
 flow: !new:inspiremusic.flow.flow.MaskedDiff
     input_size: 256
     output_size: 80
-    spk_embed_dim: !ref <spk_embed_dim>
     output_type: 'mel'
     vocab_size: 4096
     input_frame_rate: 75

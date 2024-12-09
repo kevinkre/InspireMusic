@@ -73,10 +73,10 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
   test_set=${dataset_name}_dev
   echo "Run inference."
   expr_name="${test_set}"
-  for mode in sft; do
-    [ -d `pwd`/exp/${model_name}/${mode}_${expr_name} ] && rm -rf `pwd`/exp/${model_name}/${mode}_${expr_name}
-    echo `pwd`/exp/${model_name}/${mode}_${expr_name}
-    python inspiremusic/bin/inference.py --mode $mode \
+  for task in 'text-to-music' 'continuation'; do
+    [ -d `pwd`/exp/${model_name}/${task}_${expr_name} ] && rm -rf `pwd`/exp/${model_name}/${task}_${expr_name}
+    echo `pwd`/exp/${model_name}/${task}_${expr_name}
+    python inspiremusic/bin/inference.py --task $task \
         --gpu 0 \
         --config conf/inspiremusic.yaml \
         --prompt_data data/${test_set}/parquet/data.list \
@@ -84,7 +84,7 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
         --llm_model $pretrained_model_dir/llm.pt \
         --music_tokenizer $pretrained_model_dir/music_tokenizer \
         --wavtokenizer $pretrained_model_dir/wavtokenizer \
-        --result_dir `pwd`/exp/${model_name}/${mode}_${expr_name}
+        --result_dir `pwd`/exp/${model_name}/${task}_${expr_name}
   done
 fi
 

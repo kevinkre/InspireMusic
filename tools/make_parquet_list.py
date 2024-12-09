@@ -29,7 +29,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def job(utt_list, token_list, parquet_file, utt2text, utt2time, utt2chorus, semantic_token_list):
     start_time = time.time()
-    data_list = []
 
     text_list = [utt2text[utt] for utt in utt_list]
     time_start = [utt2time[utt][0] for utt in utt_list]
@@ -55,7 +54,6 @@ def job(utt_list, token_list, parquet_file, utt2text, utt2time, utt2chorus, sema
 
 def text_only_job(utt_list, parquet_file, utt2text, utt2time, utt2chorus):
     start_time = time.time()
-    data_list = []
 
     text_list = [utt2text[utt] for utt in utt_list]
     time_start = [utt2time[utt][0] for utt in utt_list]
@@ -78,7 +76,7 @@ def text_only_job(utt_list, parquet_file, utt2text, utt2time, utt2chorus):
     logging.info('Processing time {}s'.format(time.time() - start_time))
 
 def parse_trans(line):
-    music_forms = ["intro", "verse1", "chorus", "verse2", "verse", "outro"]
+    music_structure_labels = ["intro", "verse1", "chorus", "verse2", "verse", "outro"]
     uid,l = line.strip().split("\t")
     split = l.split("|><|")
     time_start = float(split[0].replace("<|",""))
@@ -90,8 +88,8 @@ def parse_trans(line):
         text = "<|music|>"
     else:
         text = split[2]
-    if chorus not in music_forms:
-        chorus = random.choice(music_forms)
+    if chorus not in music_structure_labels:
+        chorus = random.choice(music_structure_labels)
     if chorus in ["verse1", "verse2"]:
         chorus = "verse"
 

@@ -28,6 +28,7 @@ from inspiremusic.dataset.dataset import Dataset
 import random
 import time
 from inspiremusic.utils.audio_utils import trim_audio
+from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -35,17 +36,17 @@ def get_args():
     parser = argparse.ArgumentParser(description='inference only with your model')
     parser.add_argument('--config', required=True, help='config file')
     parser.add_argument('--prompt_data', required=True, help='prompt data file')
-    parser.add_argument('--flow_model', required=True, help='flow model file')
+    parser.add_argument('--flow_model', default=None, required=False, help='flow model file')
     parser.add_argument('--llm_model', default=None,required=False, help='flow model file')
     parser.add_argument('--music_tokenizer', required=True, help='music tokenizer model file')
     parser.add_argument('--wavtokenizer', required=True, help='wavtokenizer model file')
-    parser.add_argument('--chorus', default="verse",required=False, help='chorus tag generation mode, eg. random, verse, chorus, intro.')
-    parser.add_argument('--no_flow', default=False, required=False, help='inference with out flow matching model')
-    parser.add_argument('--fp16', default=True, required=False, help='inference with out flow matching model')
-    parser.add_argument('--trim', default=True, required=False, help='trim generated audio')
+    parser.add_argument('--chorus', default="random",required=False, help='chorus tag generation mode, eg. random, verse, chorus, intro.')
+    parser.add_argument('--fast', default=False, required=False, help='True: fast inference mode, without flow matching for fast inference. False: normal inference mode, with flow matching for high quality.')
+    parser.add_argument('--fp16', default=True, required=False, help='inference with fp16 model')
+    parser.add_argument('--trim', default=True, required=False, help='trim the silence ending of generated audio')
     parser.add_argument('--sample_rate', type=int, default=24000, required=False,
                         help='sampling rate of generated audio')
-    parser.add_argument('--min_generate_audio_seconds', type=float, default=8.0, required=False,
+    parser.add_argument('--min_generate_audio_seconds', type=float, default=10.0, required=False,
                         help='the minimum generated audio length in seconds')
     parser.add_argument('--max_generate_audio_seconds', type=float, default=30.0, required=False,
                         help='the maximum generated audio length in seconds')
@@ -53,20 +54,17 @@ def get_args():
                         type=int,
                         default=-1,
                         help='gpu id for this rank, -1 for cpu')
-    parser.add_argument('--mode',
-                        default='sft',
-                        choices=['sft', 'zero_shot'],
-                        help='inference mode')
+    parser.add_argument('--task',
+                        default='text-to-music',
+                        choices=['text-to-music', 'continuation'],
+                        help='choose inference task type. text-to-music: text-to-music task. continuation: music continuation task.')
     parser.add_argument('--result_dir', required=True, help='asr result file')
-    # parser.add_argument('--caras_sampling', default=False, required=False, help='use ras sampling')
     args = parser.parse_args()
     print(args)
     return args
 
 
 def main():
-    music_forms = ["intro", "verse1", "chorus", "verse2", "outro"]
-
     args = get_args()
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(message)s')
@@ -82,8 +80,10 @@ def main():
     with open(args.config, 'r') as f:
         configs = load_hyperpyyaml(f)
 
-    model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], args.no_flow, args.fp16)
+    model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], args.fast, args.fp16)
+    
     model.load(args.llm_model, args.flow_model, args.music_tokenizer, args.wavtokenizer)
+
     if args.llm_model is None:
         model.llm = None
     else:
@@ -116,10 +116,6 @@ def main():
                 batch["time_end"] = torch.randint(args.min_generate_audio_seconds, args.max_generate_audio_seconds, (1,)).to(torch.float64)
             elif (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) < args.min_generate_audio_seconds:
                 batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
-                # batch["time_end"] =  torch.Tensor([int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds)]).to(torch.float64)
-            
-            # batch["time_start"] = torch.Tensor([60.0]).to(torch.float64)
-            # batch["time_end"] = torch.Tensor([70.0]).to(torch.float64)
 
             if "chorus" not in batch.keys():
                 batch["chorus"] = torch.randint(1, 5, (1,))
@@ -139,25 +135,36 @@ def main():
             time_end = batch["time_end"].to(device)
             chorus = batch["chorus"].to(torch.int)
 
-            text_prompt = f"<|{batch['time_start'].numpy()[0]}|><|{music_forms[chorus.numpy()[0]]}|><|{batch['text'][0]}|><|{batch['time_end'].numpy()[0]}|>"
+            text_prompt = f"<|{batch['time_start'].numpy()[0]}|><|{MUSIC_STRUCTURE_LABELS[chorus.numpy()[0]]}|><|{batch['text'][0]}|><|{batch['time_end'].numpy()[0]}|>"
             chorus = chorus.to(device)
-            audio_token = batch["acoustic_token"].to(device)
-            audio_token_len = batch["acoustic_token_len"].to(device)
+
+            if batch["acoustic_token"] is None:
+                audio_token = None
+                audio_token_len = None
+            else:
+                audio_token = batch["acoustic_token"].to(device)
+                audio_token_len = batch["acoustic_token_len"].to(device)
+
             text = batch["text"]
 
             if "semantic_token" in batch:                      
                 token  = batch["semantic_token"].to(device)  
                 token_len  = batch["semantic_token_len"].to(device)   
-            else:                                                               
-                token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
-                token_len  = audio_token_len / 4   
+            else:
+                if audio_token is None:  
+                    token = None
+                    token_len = None
+                else:                                                            
+                    token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
+                    token_len  = audio_token_len / 4   
 
-            if args.mode == 'sft':
-                model_input = {"text": text_token, "audio_token": token, "audio_token_len": token_len,
+
+            if args.task in ['text-to-music', 'continuation']:
+                model_input = {"text": text, "audio_token": token, "audio_token_len": token_len,
                                 "text_token": text_token, "text_token_len": text_token_len,
                                 "embeddings": [time_start, time_end, chorus], "raw_text":text}
             else:
-                model_input = {'text': text_token, 'text_len': text_token_len,
+                model_input = {'text': text, 'text_len': text_token_len,
                             'prompt_text': text_token, 'prompt_text_len': text_token_len,
                             'llm_prompt_audio_token': audio_token, 'llm_prompt_audio_token_len': audio_token_len,
                             'flow_prompt_audio_token': audio_token, 'flow_prompt_audio_token_len': audio_token_len,
@@ -168,8 +175,15 @@ def main():
             music_audios = []
             music_fn = os.path.join(args.result_dir, '{}.wav'.format(music_key))
             bench_start = time.time()
-            for model_output in model.inference(**model_input):
-                music_audios.append(model_output['music_audio'])
+            if args.task == "text-to-music":
+                # text to music task. only text is required
+                for model_output in model.inference(**model_input):
+                    music_audios.append(model_output['music_audio'])
+            elif args.task == "music_continuation":
+                # music continuation task. text, audio are required
+                for model_output in model.continuation_inference(**model_input):
+                    music_audios.append(model_output['music_audio'])
+
             bench_end = time.time()
             if args.trim:
                 music_audio = trim_audio(music_audios[0], sample_rate=args.sample_rate, threshold=0.05, min_silence_duration=0.8)

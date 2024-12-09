@@ -21,6 +21,7 @@ import torch
 
 IGNORE_ID = -1
 
+MUSIC_STRUCTURE_LABELS = ["intro", "verse1", "chorus", "verse2", "outro"]
 
 def pad_list(xs: List[torch.Tensor], pad_value: int):
     """Perform padding for the list of tensors.
@@ -117,14 +118,6 @@ def ras_sampling(weighted_scores, decoded_tokens, sampling, top_p=0.8, top_k=25,
     rep_num = (torch.tensor(decoded_tokens[-win_size:]).to(weighted_scores.device) == top_ids).sum().item()
     if rep_num >= win_size * tau_r:
         top_ids = random_sampling(weighted_scores, decoded_tokens, sampling)
-    return top_ids
-
-def caras_sampling(weighted_scores, decoded_tokens, sampling, top_p=0.8, top_k=25, win_size=10, tau_r=0.1):
-    weighted_scores, cfg_weighted_scores = weighted_scores
-    top_ids = nucleus_sampling(weighted_scores, top_p=top_p, top_k=top_k)
-    rep_num = (torch.tensor(decoded_tokens[-win_size:]).to(weighted_scores.device) == top_ids).sum().item()
-    if rep_num >= win_size * tau_r:
-        top_ids = random_sampling(cfg_weighted_scores, decoded_tokens, sampling)
     return top_ids
 
 def nucleus_sampling(weighted_scores, top_p=0.8, top_k=25):

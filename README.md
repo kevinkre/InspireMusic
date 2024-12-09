@@ -71,7 +71,7 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 - A unified framework for music/song/audio generation.
 - Controllable with text prompts, music genres, music structures, etc.
 - Convenient Fine-tuning and Inference: Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily their music generation models.
-- High audio quality.
+- Support text-to-music, music continuation tasks with high audio quality.
 
 <a name="What's News"></a>
 ## What's New 🔥
@@ -229,10 +229,11 @@ cd InspireMusic/examples/music_generation/
 bash infer.sh
 ```
 
-Here is an example code to run inference with flow matching model.
+Here is an example code to run inference with normal mode, i.e., with flow matching model for text-to-music and music continuation tasks.
 ```sh
 pretrained_model_dir = "./pretrained_models/InspireMusic/"
-python inspiremusic/bin/inference.py --mode sft \
+for task in 'text-to-music' 'continuation'; do
+  python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
       --config conf/inspiremusic.yaml \
       --prompt_data data/test/parquet/data.list \
@@ -240,16 +241,18 @@ python inspiremusic/bin/inference.py --mode sft \
       --llm_model $pretrained_model_dir/llm.pt \
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
-      --result_dir `pwd`/exp/inspiremusic/sft_test \
+      --result_dir `pwd`/exp/inspiremusic/${task}_test \
       --chorus verse \
       --min_generate_audio_seconds 8 \
       --max_generate_audio_seconds 30 
+done
 ```
 
-Here is an example code to run inference without flow matching model.
+Here is an example code to run inference with fast mode, i.e., without flow matching model for text-to-music and music continuation tasks.
 ```sh
 pretrained_model_dir = "./pretrained_models/InspireMusic/"
-python inspiremusic/bin/inference.py --mode sft \
+for task in 'text-to-music' 'continuation'; do
+  python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
       --config conf/inspiremusic.yaml \
       --prompt_data data/test/parquet/data.list \
@@ -257,11 +260,12 @@ python inspiremusic/bin/inference.py --mode sft \
       --llm_model $pretrained_model_dir/llm.pt \
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
-      --no_flow_mode True \
-      --result_dir `pwd`/exp/inspiremusic/sft_test \
+      --result_dir `pwd`/exp/inspiremusic/${task}_test \
       --chorus verse \
+      --fast True \
       --min_generate_audio_seconds 8 \
       --max_generate_audio_seconds 30 
+done
 ```
 
 ## Roadmap

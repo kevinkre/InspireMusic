@@ -90,10 +90,12 @@ class DistributedSampler:
         """
         data = list(range(len(data)))
         # force datalist even
+
         if self.partition:
             if self.shuffle:
                 random.Random(self.epoch).shuffle(data)
             if len(data) < self.world_size:
+                print(len(data), self.world_size)
                 data = data * math.ceil(self.world_size / len(data))
                 data = data[:self.world_size]
             data = data[self.rank::self.world_size]
@@ -139,7 +141,7 @@ def Dataset(data_list_file,
             tokenizer (BaseTokenizer): tokenizer to tokenize
             partition(bool): whether to do data partition in terms of rank
     """
-    assert mode in ['train', 'inference']
+    assert mode in ['train', 'inference', 'processing']
     lists = read_lists(data_list_file)
 
     dataset = DataList(lists,

@@ -25,7 +25,6 @@ class MaskedDiff(torch.nn.Module):
     def __init__(self,
                  input_size: int = 512,
                  output_size: int = 80,
-                 spk_embed_dim: int = 192,
                  output_type: str = "mel",
                  vocab_size: int = 4096,
                  input_frame_rate: int = 50,

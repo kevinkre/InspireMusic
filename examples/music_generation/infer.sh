@@ -23,8 +23,8 @@ dataset_name=musiccaps_dev
 # inference
 echo "Run inference."
 expr_name="inspiremusic_${dataset_name}"
-for mode in sft; do
-  python inspiremusic/bin/inference.py --mode $mode \
+for task in 'text-to-music' 'continuation'; do
+  python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
       --config conf/inspiremusic.yaml \
       --prompt_data data/${dataset_name}/parquet/data.list \
@@ -33,8 +33,9 @@ for mode in sft; do
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
       --chorus verse \
+      --fast False \
       --min_generate_audio_seconds 5 \
       --max_generate_audio_seconds 30 \
-      --result_dir `pwd`/exp/${model_name}/${mode}_${expr_name}
-  echo `pwd`/exp/${model_name}/${mode}_${expr_name}
+      --result_dir `pwd`/exp/${model_name}/${task}_${expr_name}
+  echo `pwd`/exp/${model_name}/${task}_${expr_name}
 done

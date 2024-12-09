@@ -24,7 +24,7 @@ import numpy as np
 torchaudio.set_audio_backend('soundfile')
 
 AUDIO_FORMAT_SETS = {'flac', 'mp3', 'm4a', 'ogg', 'opus', 'wav', 'wma'}
-CHORUS = {"intro":0, "chorus":1, "verse1":2, "verse2":3,"outro":4}
+CHORUS = {"intro":0, "chorus":1, "verse1":2, "verse2":3,"verse":2,"outro":4}
 
 def parquet_opener(data, mode='train', audio_data={}):
     """ Give url or local file, return file descriptor
@@ -42,6 +42,8 @@ def parquet_opener(data, mode='train', audio_data={}):
         url = sample['src']
         try:
             df = pq.read_table(url).to_pandas()
+            # if mode == 'inference':
+            #     df = df.rename(columns={'utt': 'utts'})
             for i in range(len(df)):
                 # if mode == 'inference' and df.loc[i, 'utt'] not in audio_data:
                 #     continue
@@ -54,7 +56,7 @@ def parquet_opener(data, mode='train', audio_data={}):
 
 
 def filter(data,
-           max_length=10240,
+           max_length=10240, #22500 #5min
            min_length=10,
            token_max_length=200,
            token_min_length=1,
@@ -81,22 +83,27 @@ def filter(data,
         Returns:
             Iterable[{key, wav, label, sample_rate}]
     """
-    for sample in data:
-        if "semantic_token" in sample:
-            new_sample_frames = sample['semantic_token'][0].shape[0]
-        else:
-            new_sample_frames = sample['speech_token']
+    if mode == "train":
+        for sample in data:
+            if "semantic_token" in sample:
+                new_sample_frames = sample['semantic_token'][0].shape[0]
+            else:
+                new_sample_frames = sample['speech_token']
 
-        if "text_token" in sample:
-            new_sample_frames +=  len(sample['text_token'])
-        if new_sample_frames > max_length or new_sample_frames <  min_length:
-            print(f"skipped 1 item length={new_sample_frames}")
-            continue
+            if "text_token" in sample:
+                new_sample_frames +=  len(sample['text_token'])
+            if new_sample_frames > max_length or new_sample_frames <  min_length:
+                print(f"skipped 1 item length={new_sample_frames}")
+                continue
 
-        yield sample
+            yield sample
+    elif mode == "inference":
+        for sample in data:
+            yield sample
 
 
-def resample(data, resample_rate=24000, min_sample_rate=16000, mode='train'):
+
+def resample(data, resample_rate=22050, min_sample_rate=16000, mode='train'):
     """ Resample data.
         Inplace operation.
 
@@ -246,7 +253,7 @@ def sort(data, sort_size=500, mode='train'):
         yield x
 
 
-def static_batch(data, batch_size=16):
+def static_batch(data, batch_size=32):
     """ Static batch the data by `batch_size`
 
         Args:
@@ -257,11 +264,15 @@ def static_batch(data, batch_size=16):
             Iterable[List[{key, feat, label}]]
     """
     buf = []
+    data_empty = True
     for sample in data:
+        data_empty = False
         buf.append(sample)
         if len(buf) >= batch_size:
             yield buf
             buf = []
+    if data_empty:
+        raise ValueError("data is empty")
     if len(buf) > 0:
         yield buf
 
@@ -309,6 +320,8 @@ def batch(data, batch_type='static', batch_size=16, max_frames_in_batch=12000, m
     """
     if mode == 'inference':
         return static_batch(data, 1)
+    elif mode == 'processing':
+        return static_batch(data, batch_size)
     else:
         if batch_type == 'static':
             return static_batch(data, batch_size)
@@ -318,7 +331,7 @@ def batch(data, batch_type='static', batch_size=16, max_frames_in_batch=12000, m
             logging.fatal('Unsupported batch type {}'.format(batch_type))
 
 
-def padding(data, use_spk_embedding, mode='train'):
+def padding(data, mode='train'):
     """ Padding the data into training data
 
         Args:
@@ -327,47 +340,73 @@ def padding(data, use_spk_embedding, mode='train'):
         Returns:
             Iterable[Tuple(keys, feats, labels, feats lengths, label lengths)]
     """
+    if mode == "train":
+        for sample in data:
+            assert isinstance(sample, list)
 
-    for sample in data:
-        assert isinstance(sample, list)
+            acoustic_feat_len = torch.tensor([x['acoustic_token'].size(0) for x in sample],
+                                        dtype=torch.int32)
+            order = torch.argsort(acoustic_feat_len, descending=True)
 
-        acoustic_feat_len = torch.tensor([x['acoustic_token'].size(0) for x in sample],
-                                       dtype=torch.int32)
-        order = torch.argsort(acoustic_feat_len, descending=True)
-
-        utts = [sample[i]['utt'] for i in order]
-        acoustic_token = [sample[i]['acoustic_token'] for i in order]
-        acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
-        acoustic_token = pad_sequence(acoustic_token,
-                                    batch_first=True,
-                                    padding_value=0)    
-        
-        text = [sample[i]['text'] for i in order]
-        text_token = [torch.tensor(sample[i]['text_token']).long() for i in order]
-        text_token_len = torch.tensor([i.size(0) for i in text_token], dtype=torch.int32)
-        text_token = pad_sequence(text_token, batch_first=True, padding_value=0)
-        time_start = torch.tensor([sample[i]['time_start'] for i in order])
-        time_end = torch.tensor([sample[i]['time_end'] for i in order])
-        chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in order])
-
-        batch = {
-            "utts": utts,
-            "acoustic_token": acoustic_token,
-            "acoustic_token_len": acoustic_token_len,
-            "time_start": time_start,
-            "time_end": time_end,
-            "chorus": chorus,
-            "text": text,
-            "text_token": text_token,
-            "text_token_len": text_token_len,
-        }
-
-        if "semantic_token" in sample[0]:
-            semantic_token = [torch.tensor(sample[i]['semantic_token'][0],dtype=torch.int32) for i in order]
-            semantic_token_len = torch.tensor([i.size(0) for i in semantic_token], dtype=torch.int32)
-            semantic_token = pad_sequence(semantic_token,
+            utts = [sample[i]['utt'] for i in order]
+            acoustic_token = [sample[i]['acoustic_token'] for i in order]
+            acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
+            acoustic_token = pad_sequence(acoustic_token,
                                         batch_first=True,
-                                        padding_value=0)  
-            batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
+                                        padding_value=0)    
+            
+            text = [sample[i]['text'] for i in order]
+            text_token = [torch.tensor(sample[i]['text_token']).long() for i in order]
+            text_token_len = torch.tensor([i.size(0) for i in text_token], dtype=torch.int32)
+            text_token = pad_sequence(text_token, batch_first=True, padding_value=0)
+            time_start = torch.tensor([sample[i]['time_start'] for i in order])
+            time_end = torch.tensor([sample[i]['time_end'] for i in order])
+            chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in order])
 
-        yield batch
+            batch = {
+                "utts": utts,
+                "acoustic_token": acoustic_token,
+                "acoustic_token_len": acoustic_token_len,
+                "time_start": time_start,
+                "time_end": time_end,
+                "chorus": chorus,
+                "text": text,
+                "text_token": text_token,
+                "text_token_len": text_token_len,
+            }
+
+            if "semantic_token" in sample[0]:
+                semantic_token = [torch.tensor(sample[i]['semantic_token'][0],dtype=torch.int32) for i in order]
+                semantic_token_len = torch.tensor([i.size(0) for i in semantic_token], dtype=torch.int32)
+                semantic_token = pad_sequence(semantic_token,
+                                            batch_first=True,
+                                            padding_value=0)  
+                batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
+
+            yield batch
+
+    elif mode == "inference":
+        for sample in data:
+            assert isinstance(sample, list)
+            utts = [sample[i]['utt'] for i in range(len(sample))]  
+            text = [sample[i]['text'] for i in range(len(sample))]
+            text_token = [torch.tensor(sample[i]['text_token']).long() for i in range(len(sample))]
+            text_token_len = torch.tensor([i.size(0) for i in text_token], dtype=torch.int32)
+            text_token = pad_sequence(text_token, batch_first=True, padding_value=0)
+            time_start = torch.tensor([sample[i]['time_start'] for i in range(len(sample))])
+            time_end = torch.tensor([sample[i]['time_end'] for i in range(len(sample))])
+            chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in range(len(sample))])
+
+            batch = {
+                "utts": utts,
+                "acoustic_token": None,
+                "acoustic_token_len": None,
+                "time_start": time_start,
+                "time_end": time_end,
+                "chorus": chorus,
+                "text": text,
+                "text_token": text_token,
+                "text_token_len": text_token_len,
+            }
+
+            yield batch            
