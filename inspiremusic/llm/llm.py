@@ -199,6 +199,7 @@ class LLM(torch.nn.Module):
         chorus = batch['chorus'].to(device)
 
         if self.train_cfg_ratio > 0:
+            # Classifier-Free Guidance
             text_token,text_token_len = self.cfg_dropout(text_token,text_token_len,self.train_cfg_ratio)
 
         lm_target = [torch.tensor([IGNORE_ID] * (4 + text_token_len[i]) + audio_token[i, :audio_token_len[i]].tolist() +
