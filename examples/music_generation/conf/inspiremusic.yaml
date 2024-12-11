@@ -9,19 +9,17 @@ sample_rate: 24000
 text_encoder_input_size: 512
 llm_input_size: 896
 llm_output_size: 896
-spk_embed_dim: 192
 
 # model params
 # for all class/function included in this repo, we use !<name> or !<new> for intialization, so that user may find all corresponding class/function according to one single yaml.
 # for system/third_party class/function, we do not require this.
-llm: !new:inspiremusic.llm.plm.PLM
+llm: !new:inspiremusic.llm.llm.LLM
     text_encoder_input_size: !ref <text_encoder_input_size>
     llm_input_size: !ref <llm_input_size>
     llm_output_size: !ref <llm_output_size>
     audio_token_size: 4096
     length_normalized_loss: True
     lsm_weight: 0
-    spk_embed_dim: !ref <spk_embed_dim>
     text_encoder_conf:
         name: "none"
     llm: !new:inspiremusic.transformer.qwen_encoder.QwenEmbeddingEncoder
@@ -62,8 +60,6 @@ flow: !new:inspiremusic.flow.flow.MaskedDiff
         sampling_ratios: [1, 1, 1, 1]
     decoder: !new:inspiremusic.flow.flow_matching.ConditionalCFM
         in_channels: 240
-        n_spks: 1
-        spk_emb_dim: 80
         cfm_params: !new:omegaconf.DictConfig
             content:
                 sigma_min: 1e-06
@@ -82,6 +78,7 @@ flow: !new:inspiremusic.flow.flow.MaskedDiff
             num_mid_blocks: 8
             num_heads: 8
             act_fn: 'gelu'
+    generator_model_dir: ../../pretrained_models/InspireMusic-Base/
 
 hift: !new:inspiremusic.hifigan.generator.HiFTGenerator
     in_channels: 80
@@ -146,7 +143,6 @@ batch: !name:inspiremusic.dataset.processor.batch
     batch_type: 'dynamic'
     max_frames_in_batch: 15000
 padding: !name:inspiremusic.dataset.processor.padding
-    use_spk_embedding: False # change to True during sft
 
 # dataset processor pipeline
 data_pipeline: [

@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
-import random
 from typing import Dict, Optional
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
 from omegaconf import DictConfig
 from inspiremusic.utils.mask import make_pad_mask
 from inspiremusic.music_tokenizer.vqvae import VQVAE
@@ -60,7 +58,7 @@ class MaskedDiff(torch.nn.Module):
         self.quantizer = VQVAE( f'{generator_model_dir}/config.json',
                                   f'{generator_model_dir}/model.pt',with_encoder=True).quantizer
         self.quantizer.eval()
-        self.num_codebooks  = 4
+        self.num_codebooks = 4
                                   
     def forward(
             self,

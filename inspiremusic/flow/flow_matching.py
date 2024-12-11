@@ -15,20 +15,16 @@ import torch
 import torch.nn.functional as F
 from matcha.models.components.flow_matching import BASECFM
 
-
 class ConditionalCFM(BASECFM):
-    def __init__(self, in_channels, cfm_params, n_spks=1, spk_emb_dim=64, estimator: torch.nn.Module = None):
+    def __init__(self, in_channels, cfm_params, estimator: torch.nn.Module = None):
         super().__init__(
             n_feats=in_channels,
             cfm_params=cfm_params,
-            n_spks=n_spks,
-            spk_emb_dim=spk_emb_dim,
         )
         self.t_scheduler = cfm_params.t_scheduler
+        # set the Classifier-Free Guidance rate
         self.training_cfg_rate = cfm_params.training_cfg_rate
         self.inference_cfg_rate = cfm_params.inference_cfg_rate
-        in_channels = in_channels + (spk_emb_dim if n_spks > 0 else 0)
-        # Just change the architecture of the estimator here
         self.estimator = estimator
 
     @torch.inference_mode()

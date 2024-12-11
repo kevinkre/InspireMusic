@@ -143,16 +143,8 @@ class InspireMusicModel:
         # require either audio input only or text and audio inputs
 
         this_uuid = str(uuid.uuid1())
-        
-        input_token = None
-        if text_token is not None:
-            input_token = text_token
 
-        if audio_token is not None:
-            if input_token is not None:
-                input_token = torch.cat((input_token, audio_token), dim=1)
-            else:
-                input_token = audio_token
+        input_token = torch.cat([t for t in (text_token, audio_token) if t is not None], dim=1) if text_token or audio_token else None
 
         if self.llm:
             with self.lock:

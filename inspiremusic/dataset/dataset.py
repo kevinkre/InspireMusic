@@ -14,9 +14,7 @@
 # limitations under the License.
 
 import random
-import json
 import math
-from functools import partial
 
 import torch
 import torch.distributed as dist
