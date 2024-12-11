@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument('--music_tokenizer', required=True, help='music tokenizer model file')
     parser.add_argument('--wavtokenizer', required=True, help='wavtokenizer model file')
     parser.add_argument('--chorus', default="random",required=False, help='chorus tag generation mode, eg. random, verse, chorus, intro.')
-    parser.add_argument('--fast', default=False, required=False, help='True: fast inference mode, without flow matching for fast inference. False: normal inference mode, with flow matching for high quality.')
+    parser.add_argument('--fast', action='store_true', required=False, help='True: fast inference mode, without flow matching for fast inference. False: normal inference mode, with flow matching for high quality.')
     parser.add_argument('--fp16', default=True, required=False, help='inference with fp16 model')
     parser.add_argument('--trim', default=True, required=False, help='trim the silence ending of generated audio')
     parser.add_argument('--sample_rate', type=int, default=24000, required=False,
@@ -162,9 +162,10 @@ def main():
                                 "text_token": text_token, "text_token_len": text_token_len,
                                 "embeddings": [time_start, time_end, chorus], "raw_text":text}
             else:
+                # zero-shot
                 model_input = {'text': text, 'text_len': text_token_len,
                             'prompt_text': text_token, 'prompt_text_len': text_token_len,
-                            'llm_prompt_audio_token': audio_token, 'llm_prompt_audio_token_len': audio_token_len,
+                            'llm_prompt_audio_token': token, 'llm_prompt_audio_token_len': token_len,
                             'flow_prompt_audio_token': audio_token, 'flow_prompt_audio_token_len': audio_token_len,
                             'prompt_audio_feat': audio_feat, 'prompt_audio_feat_len': audio_feat_len,
                             'llm_embedding': utt_embedding, 'flow_embedding': utt_embedding}

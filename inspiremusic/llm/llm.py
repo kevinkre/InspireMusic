@@ -96,6 +96,7 @@ class LLM(torch.nn.Module):
         self.time_embedding = SinusoidalEmbedding(llm_input_size)
     
     def cfg_dropout(self,text_token,text_token_len,p):
+        # Classifier-Free Guidance Dropout
         B = text_token.size(0)
         num_samples_to_mask = int(p * B)
         if num_samples_to_mask == 0:
@@ -255,6 +256,7 @@ class LLM(torch.nn.Module):
             embeddings: List,
             sampling: int = 50,
             duration_to_gen: float = 30,
+            token_rate: int = 75,
     ) -> Generator[torch.Tensor, None, None]:
         device = text.device
         text = torch.concat([prompt_text, text], dim=1)
@@ -277,21 +279,27 @@ class LLM(torch.nn.Module):
         # 3. concat llm_input
         sos_eos_emb = self.llm_embedding.weight[self.sos_eos].reshape(1, 1, -1)
         task_id_emb = self.llm_embedding.weight[self.task_id].reshape(1, 1, -1)
-            
-        lm_input = torch.concat([sos_eos_emb,  time_start_embed, time_end_embed, chorus_embed, text, task_id_emb], dim=1)
+
+        if prompt_audio_token_len != 0:
+            prompt_audio_token_emb = self.speech_embedding(prompt_audio_token)
+        else:
+            prompt_audio_token_emb = torch.zeros(1, 0, self.llm_input_size, dtype=text.dtype).to(device)
+
+        lm_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text, prompt_audio_token_emb, task_id_emb], dim=1)
         if infer_cfg:
-            lm_cf_input = torch.concat([sos_eos_emb,  time_start_embed, time_end_embed, chorus_embed, text_cfg, task_id_emb], dim=1)
-            lm_input = torch.cat([lm_input,lm_cf_input],0)
+            audio_cfg = self.speech_embedding(prompt_audio_token.new_zeros(prompt_audio_token.shape))
+            lm_cf_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text_cfg, audio_cfg, task_id_emb], dim=1)
+            lm_input = torch.cat([lm_input, lm_cf_input], 0)
+
         # 4. cal min/max_length
-        min_len = duration_to_gen * 75
-        max_len = duration_to_gen * 75
+        min_len = duration_to_gen * token_rate
+        max_len = duration_to_gen * token_rate
         logging.info(f"LLM generation sequence length: {max_len}, generate audio length {duration_to_gen}s.")
 
         # 5. step by step decode
         out_tokens = []
         offset = 0
         state = None
-        cfg_state = None
         for i in range(max_len):
             y_pred,_, state = self.llm.forward_one_step(lm_input,torch.ones(lm_input.shape[0], lm_input.shape[1],
                                     device=lm_input.device).to(torch.bool),cache=state)
