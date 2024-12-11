@@ -145,7 +145,7 @@ if __name__ == "__main__":
     if args.semantic_token_dir is not None:
         utt2semantic_token = {}
         for fn in os.listdir(args.semantic_token_dir):
-            if fn.endswith("pt") and fn.startwith("utt2semantic_"):
+            if fn.endswith("pt") and fn.startswith("utt2semantic_"):
                 print(f"Starting {fn}")
                 try:
                     utt2semantic_token.update(torch.load('{}/{}'.format(args.semantic_token_dir,fn)))
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     
     if args.acoustic_token_dir is not None:
         for fn in os.listdir(args.acoustic_token_dir):
-            if fn.endswith("pt") and fn.startwith("utt2acoustic_"):
+            if fn.endswith("pt") and fn.startswith("utt2acoustic_"):
                 print(f"Starting {fn}")
                 utt2token = torch.load('{}/{}'.format(args.acoustic_token_dir,fn))
 
