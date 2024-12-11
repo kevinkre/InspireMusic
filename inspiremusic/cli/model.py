@@ -144,7 +144,10 @@ class InspireMusicModel:
 
         this_uuid = str(uuid.uuid1())
 
-        input_token = torch.cat([t for t in (text_token, audio_token) if t is not None], dim=1) if text_token or audio_token else None
+        if text_token is not None or audio_token is not None:
+            input_token = torch.cat([t for t in (text_token, audio_token) if t is not None], dim=1)
+        else:
+            raise("Input either text or audio prompt")
 
         if self.llm:
             with self.lock:
