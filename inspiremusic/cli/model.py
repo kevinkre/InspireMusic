@@ -17,7 +17,6 @@ import threading
 import time
 from contextlib import nullcontext
 import uuid
-from inspiremusic.utils.common import fade_in_out
 from inspiremusic.music_tokenizer.vqvae import VQVAE
 from inspiremusic.wavtokenizer.decoder.pretrained import WavTokenizer
 from torch.cuda.amp import autocast
@@ -126,6 +125,7 @@ class InspireMusicModel:
         return wav
 
     def semantictoken2wav(self, token):
+        # fast mode, use wavtokenizer decoder
         new_tensor = torch.tensor(token.to(self.device)).unsqueeze(0)
         features = self.wavtokenizer.codes_to_features(new_tensor)
         bandwidth_id = torch.tensor([0]).to(self.device)
@@ -140,15 +140,25 @@ class InspireMusicModel:
                   prompt_audio_feat=torch.zeros(1, 0, 80), duration_to_gen = 30, trim = True, stream=False, **kwargs):
         # this_uuid is used to track variables related to this inference thread
         # music continuation task
+        # require either audio input only or text and audio inputs
 
         this_uuid = str(uuid.uuid1())
+        
+        input_token = None
+        if text_token is not None:
+            input_token = text_token
+
+        if audio_token is not None:
+            if input_token is not None:
+                input_token = torch.cat((input_token, audio_token), dim=1)
+            else:
+                input_token = audio_token
 
         if self.llm:
             with self.lock:
                 self.music_token_dict[this_uuid], self.llm_end_dict[this_uuid] = [], False
-            p = threading.Thread(target=self.llm_job, args=(text, prompt_text, llm_prompt_audio_token, embeddings, this_uuid, duration_to_gen))
+            p = threading.Thread(target=self.llm_job, args=(input_token, prompt_text, llm_prompt_audio_token, embeddings, this_uuid, duration_to_gen))
             p.start()
-
         
         if stream is True:
             token_hop_len = self.token_min_hop_len
@@ -167,7 +177,7 @@ class InspireMusicModel:
                 if self.llm_end_dict[this_uuid] is True and len(self.music_token_dict[this_uuid]) < token_hop_len + self.token_overlap_len:
                     break
             p.join()
-            # deal with remain tokens, make sure inference remain token len equals token_hop_len when cache_speech is not None
+            # deal with remain tokens, make sure inference remain token len equals token_hop_len when cache_audio is not None
             this_music_token = torch.concat(self.music_token_dict[this_uuid], dim=1)
             with self.flow_hift_context:
                 this_music_audio = self.token2wav(token=this_music_token,
@@ -178,6 +188,7 @@ class InspireMusicModel:
                                                  finalize=True)
             yield {'music_audio': this_music_audio.cpu()}
         else:
+            # deal with all tokens
             if self.fast:
                 if self.llm:
                     p.join()
@@ -275,6 +286,7 @@ class InspireMusicModel:
                                                  finalize=True)
             yield {'music_audio': this_music_audio.cpu()}
         else:
+            # deal with all tokens
             if self.fast:
                 if self.llm:
                     p.join()

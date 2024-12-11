@@ -34,9 +34,9 @@ def job(utt_list, token_list, parquet_file, utt2text, utt2time, utt2chorus, sema
     time_start = [utt2time[utt][0] for utt in utt_list]
     time_end = [utt2time[utt][1] for utt in utt_list]
     chorus_list = [utt2chorus[utt] for utt in utt_list]
-
+    print(len(token_list))
+    print(len(semantic_token_list))
     try:
-        # 保存到parquet
         df = pd.DataFrame()
         df['utt'] = utt_list
         df['text'] = text_list
@@ -100,69 +100,83 @@ def parse_trans(line):
         time_start = 0.0
     return (uid, time_start, time_end, chorus, text)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_utts_per_parquet',
                         type=int,
                         default=1000,
+                        required=False,
                         help='num utts per parquet')
     parser.add_argument('--num_processes',
                         type=int,
                         default=1,
+                        required=False,
                         help='num processes for make parquets')
     parser.add_argument('--src_dir',
-                        type=str)
+                        type=str, required=True)
     parser.add_argument('--des_dir',
-                        type=str)
+                        type=str, required=True)
     parser.add_argument('--semantic_token_dir',
                         type=str,
-                        default=None)
+                        default=None, required=False)
     parser.add_argument('--acoustic_token_dir',
                         type=str,
-                        default=None)
+                        default=None, required=False)
     args = parser.parse_args()
-    
-    # # Using process pool to speedup
-    pool = multiprocessing.Pool(processes=args.num_processes)
-    parquet_list  = []
+
+    parquet_list = []
     cnt = 0
     utt2text = {}
     utt2time = {}
     utt2chorus = {}
+    uid_list = []
 
-    with open('{}/text'.format(args.src_dir)) as f:
+    print(args)
+
+    if not os.path.exists(f'{args.src_dir}/text'):
+        raise FileNotFoundError(
+            f"Please check: {args.src_dir}/text file does not exist")
+
+    with open(f'{args.src_dir}/text', 'r') as f:
         for l in f:
             res = parse_trans(l)
             if res is None:
-                continue 
+                continue
             uid, time_start, time_end, chorus, text = res
-            utt2time[uid] = (time_start,time_end)
+            uid_list.append(uid)
+            utt2time[uid] = (time_start, time_end)
             utt2chorus[uid] = chorus
             utt2text[uid] = text
     utt2semantic_token = None
     utt2acoustic_token = None
-
     if args.semantic_token_dir is not None:
         utt2semantic_token = {}
         for fn in os.listdir(args.semantic_token_dir):
             if fn.endswith("pt") and fn.startswith("utt2semantic_"):
                 print(f"Starting {fn}")
                 try:
-                    utt2semantic_token.update(torch.load('{}/{}'.format(args.semantic_token_dir,fn)))
+                    utt2semantic_token.update(
+                        torch.load('{}/{}'.format(args.semantic_token_dir, fn)))
                 except:
-                    print('{}/{} failed'.format(args.semantic_token_dir,fn))
+                    print('{}/{} failed'.format(args.semantic_token_dir, fn))
                     pass
         print(len(utt2semantic_token))
-    
+
+    # # Using process pool to speedup
+    pool = multiprocessing.Pool(processes=args.num_processes)
     if args.acoustic_token_dir is not None:
         for fn in os.listdir(args.acoustic_token_dir):
             if fn.endswith("pt") and fn.startswith("utt2acoustic_"):
                 print(f"Starting {fn}")
-                utt2token = torch.load('{}/{}'.format(args.acoustic_token_dir,fn))
+                utt2token = torch.load(
+                    '{}/{}'.format(args.acoustic_token_dir, fn))
 
                 utts = [utt for utt in utt2token.keys() if utt in utt2text]
                 if utt2semantic_token:
-                    utts = [utt for utt in utts if utt in utt2semantic_token]
+                    utts = [utt for utt in utts if
+                            utt in utt2semantic_token.keys()]
+
                 if len(utts) == 0:
                     print("0 lines remained.")
                     continue
@@ -170,35 +184,52 @@ if __name__ == "__main__":
                     token_lists = [utt2token[utt][0].tolist() for utt in utts]
                 else:
                     token_lists = [
-                        utt2token[utt].tolist() if utt2token[utt].dim() == 2 else utt2token[utt][0].tolist()
+                        utt2token[utt].tolist() if utt2token[
+                                                       utt].dim() == 2 else
+                        utt2token[utt][0].tolist()
                         for utt in utts
                     ]
-
-                semantic_token_lists = [utt2semantic_token[utt].tolist() if not isinstance(utt2semantic_token[utt], list) else utt2semantic_token[utt] for utt in utts] if utt2semantic_token else None
-
-                for i, j in enumerate(range(0, len(utts), args.num_utts_per_parquet)):
-                    print(f"process {i}")
-                    parquet_file = os.path.join(args.des_dir, 'parquet_{:09d}.tar'.format(cnt + i))
+                print(len(token_lists))
+                semantic_token_lists = [
+                    utt2semantic_token[utt].tolist() if not isinstance(
+                            utt2semantic_token[utt], list) else
+                    utt2semantic_token[utt] for utt in
+                    utts] if utt2semantic_token else None
+                for i, j in enumerate(
+                        range(0, len(utts), args.num_utts_per_parquet)):
+                    parquet_file = os.path.join(args.des_dir,
+                                                'parquet_{:09d}.tar'.format(
+                                                    cnt + i))
+                    print(f"process {parquet_file}")
                     parquet_list.append(parquet_file)
                     token_list = token_lists[j: j + args.num_utts_per_parquet]
                     if semantic_token_lists:
-                        semantic_token_list = semantic_token_lists[j: j + args.num_utts_per_parquet]
+                        semantic_token_list = semantic_token_lists[
+                                              j: j + args.num_utts_per_parquet]
                     else:
                         semantic_token_list = None
-                    pool.apply_async(job, (utts[j: j + args.num_utts_per_parquet], token_list, parquet_file, utt2text, utt2time, utt2chorus, semantic_token_list))
+                    pool.apply_async(job, (
+                    utts[j: j + args.num_utts_per_parquet], token_list,
+                    parquet_file, utt2text, utt2time, utt2chorus,
+                    semantic_token_list))
                     cnt += i
-                
+
     if args.semantic_token_dir is None and args.acoustic_token_dir is None:
-        for i, j in enumerate(range(0, len(utts), args.num_utts_per_parquet)):
-            print(f"process {i}")
-            parquet_file = os.path.join(args.des_dir, 'parquet_{:09d}.tar'.format(cnt + i))
+        for i, j in enumerate(
+                range(0, len(uid_list), args.num_utts_per_parquet)):
+            parquet_file = os.path.join(args.des_dir,
+                                        'parquet_{:09d}.tar'.format(cnt + i))
+            print(f"process {parquet_file}")
             parquet_list.append(parquet_file)
-            pool.apply_async(text_only_job, (utts[j: j + args.num_utts_per_parquet], parquet_file, utt2text, utt2time, utt2chorus))
+            pool.apply_async(text_only_job, (
+            uid_list[j: j + args.num_utts_per_parquet], parquet_file, utt2text,
+            utt2time, utt2chorus))
             cnt += i
-    
+
     pool.close()
     pool.join()
     print("DONE")
+
     with open('{}/data.list'.format(args.des_dir), 'w', encoding='utf8') as f1:
         for name in parquet_list:
             f1.write(name + '\n')

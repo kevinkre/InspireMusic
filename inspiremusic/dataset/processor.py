@@ -349,7 +349,7 @@ def padding(data, mode='train'):
             order = torch.argsort(acoustic_feat_len, descending=True)
 
             utts = [sample[i]['utt'] for i in order]
-            acoustic_token = [sample[i]['acoustic_token'] for i in order]
+            acoustic_token = [torch.tensor(sample[i]['acoustic_token'],dtype=torch.int32) for i in order]
             acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
             acoustic_token = pad_sequence(acoustic_token,
                                         batch_first=True,
@@ -397,10 +397,20 @@ def padding(data, mode='train'):
             time_end = torch.tensor([sample[i]['time_end'] for i in range(len(sample))])
             chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in range(len(sample))])
 
+            if "acoustic_token" in sample[0]:
+                acoustic_token = [torch.tensor(sample[i]['acoustic_token'],dtype=torch.int32) for i in range(len(sample))]
+                acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
+                acoustic_token = pad_sequence(acoustic_token,
+                                            batch_first=True,
+                                            padding_value=0)  
+            else:
+                acoustic_token = None
+                acoustic_token_len = None
+
             batch = {
                 "utts": utts,
-                "acoustic_token": None,
-                "acoustic_token_len": None,
+                "acoustic_token": acoustic_token,
+                "acoustic_token_len": acoustic_token_len,
                 "time_start": time_start,
                 "time_end": time_end,
                 "chorus": chorus,
@@ -409,4 +419,12 @@ def padding(data, mode='train'):
                 "text_token_len": text_token_len,
             }
 
-            yield batch            
+            if "semantic_token" in sample[0]:
+                semantic_token = [torch.tensor(sample[i]['semantic_token'][0],dtype=torch.int32) for i in range(len(sample))]
+                semantic_token_len = torch.tensor([i.size(0) for i in semantic_token], dtype=torch.int32)
+                semantic_token = pad_sequence(semantic_token,
+                                            batch_first=True,
+                                            padding_value=0)  
+                batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
+
+            yield batch

@@ -25,7 +25,6 @@ from hyperpyyaml import load_hyperpyyaml
 from tqdm import tqdm
 from inspiremusic.cli.model import InspireMusicModel
 from inspiremusic.dataset.dataset import Dataset
-import random
 import time
 from inspiremusic.utils.audio_utils import trim_audio
 from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
@@ -147,17 +146,16 @@ def main():
 
             text = batch["text"]
 
-            if "semantic_token" in batch:                      
-                token  = batch["semantic_token"].to(device)  
-                token_len  = batch["semantic_token_len"].to(device)   
+            if "semantic_token" in batch:
+                token  = batch["semantic_token"].to(device)
+                token_len  = batch["semantic_token_len"].to(device)
             else:
-                if audio_token is None:  
+                if audio_token is None:
                     token = None
                     token_len = None
-                else:                                                            
+                else:
                     token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
-                    token_len  = audio_token_len / 4   
-
+                    token_len  = audio_token_len / 4
 
             if args.task in ['text-to-music', 'continuation']:
                 model_input = {"text": text, "audio_token": token, "audio_token_len": token_len,
@@ -179,8 +177,8 @@ def main():
                 # text to music task. only text is required
                 for model_output in model.inference(**model_input):
                     music_audios.append(model_output['music_audio'])
-            elif args.task == "music_continuation":
-                # music continuation task. text, audio are required
+            elif args.task == "continuation":
+                # music continuation task. require either audio only input or text and audio inputs
                 for model_output in model.continuation_inference(**model_input):
                     music_audios.append(model_output['music_audio'])
 
