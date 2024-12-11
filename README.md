@@ -262,7 +262,7 @@ for task in 'text-to-music' 'continuation'; do
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
       --result_dir `pwd`/exp/inspiremusic/${task}_test \
       --chorus verse \
-      --fast True \
+      --fast \
       --min_generate_audio_seconds 8 \
       --max_generate_audio_seconds 30 
 done

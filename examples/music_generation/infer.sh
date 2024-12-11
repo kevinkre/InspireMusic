@@ -20,7 +20,7 @@ model_name="InspireMusic-Base"
 pretrained_model_dir=../../pretrained_models/${model_name}
 dataset_name=musiccaps_dev
 
-# inference
+# inference normal mode
 echo "Run inference."
 expr_name="inspiremusic_${dataset_name}"
 for task in 'text-to-music' 'continuation'; do
@@ -33,9 +33,9 @@ for task in 'text-to-music' 'continuation'; do
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
       --chorus verse \
-      --fast False \
       --min_generate_audio_seconds 5 \
       --max_generate_audio_seconds 30 \
       --result_dir `pwd`/exp/${model_name}/${task}_${expr_name}
+#      --fast # fast mode
   echo `pwd`/exp/${model_name}/${task}_${expr_name}
 done
