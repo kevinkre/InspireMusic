@@ -13,6 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This script just show an example to build your own music generation model.
+# You may need to prepare your own dataset to fine-tune or train from scratch.
+# Here take MusicCaps [1] dataset as an example.
+# Download MusicCaps from: https://huggingface.co/datasets/google/MusicCaps
+
+# Reference:
+# 1. Agostinelli, A., Denk, T. I., Borsos, Z., Engel, J., Verzetti, M., Caillon, A., Huang, Q., Jansen, A., Roberts, A., Tagliasacchi, M., Sharifi, M., Zeghidour, N., & Frank, C. (2023). MusicLM: Generating music from text. Google Research. https://doi.org/10.48550/arXiv.2301.11325
+
 . ./path.sh || exit 1;
 
 stage=1
@@ -25,6 +33,7 @@ dataset_name=musiccaps
 # data preparation
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
   echo "Download dataset and prepare wav.scp/text."
+  # Here you may need to download MusicCaps dataset
   for x in ${dataset_name}_train ${dataset_name}_dev; do
     [ -d data/$x/ ] || mkdir -p data/$x/
   done
