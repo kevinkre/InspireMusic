@@ -16,16 +16,12 @@ import argparse
 import logging
 import torch
 from tqdm import tqdm
-import onnxruntime
 import numpy as np
 import torchaudio
 import time
 import os
-import json
-from torch.multiprocessing import Process, Queue
 from inspiremusic.wavtokenizer.decoder.pretrained import WavTokenizer
 from inspiremusic.utils.audio_utils import split_wav_into_chunks
-import pdb
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 def main(args):
@@ -39,13 +35,6 @@ def main(args):
             l = l.replace('\n', '').split()
             utt2wav[l[0]] = l[1]
 
-    # option = onnxruntime.SessionOptions()
-    # option.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-    # option.intra_op_num_threads = 1
-    # providers = ["CUDAExecutionProvider"]
-    # ort_session = onnxruntime.InferenceSession(args.onnx_path, sess_options=option, providers=providers)
-
-    # torch.cuda.set_device(device)
     wavtokenizer = WavTokenizer.from_pretrained_feat(args.config_path, args.ckpt_path).to(device)
     bandwidth_id = torch.tensor([0]).to(device)
     start_time = time.time()    
@@ -55,8 +44,6 @@ def main(args):
 
         if sample_rate != args.sample_rate:
             audio = torchaudio.functional.resample(audio, orig_freq=sample_rate, new_freq=args.sample_rate)
-            # audio = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=args.sample_rate)(audio)
-
         audio_length = audio.shape[1]
         if audio_length > args.sample_rate * audio_min_length:
             if audio_length > max_chunk_size:
@@ -105,17 +92,15 @@ if __name__ == "__main__":
     parser.add_argument('--dir',
                         type=str)
     parser.add_argument('--config_path',
-                        type=str, default="/home/data2/chong.zhang/work/InspireMusic/github/InspireMusic/pretrained_models/InspireMusic-Base/wavtokenizer/config.yaml")
+                        type=str, default="pretrained_models/InspireMusic-Base/wavtokenizer/config.yaml")
     parser.add_argument('--ckpt_path',
-                        type=str, default="/home/data2/chong.zhang/work/InspireMusic/github/InspireMusic/pretrained_models/InspireMusic-Base/wavtokenizer/model.pt")
+                        type=str, default="pretrained_models/InspireMusic-Base/wavtokenizer/model.pt")
     parser.add_argument('--sample_rate',
                         default=24000,
                         type=int)
     parser.add_argument('--outwavdir',
-                        type=str, default="./exp/debug/wavs")
-    # parser.add_argument('--onnx_path',
-    #                     type=str)
+                        type=str, default="./exp/wavs")
+
     args = parser.parse_args()
 
     main(args)
-    # reconstruct("data/musiccaps_test/utt2semantic_token.pt", args.config_path, args.ckpt_path, args.outwavdir, sample_rate=args.sample_rate)

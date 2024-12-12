@@ -16,7 +16,6 @@ import argparse
 import logging
 import torch
 from tqdm import tqdm
-import onnxruntime
 import numpy as np
 import torchaudio
 from inspiremusic.utils.audio_utils import normalize, split_wav_into_chunks
@@ -36,12 +35,6 @@ def main(args):
             l = l.replace('\n', '').split()
             utt2wav[l[0]] = l[1]
 
-    # option = onnxruntime.SessionOptions()
-    # option.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
-    # option.intra_op_num_threads = 1
-    # providers = ["CUDAExecutionProvider"]
-    # ort_session = onnxruntime.InferenceSession(args.onnx_path, sess_options=option, providers=providers)
-
     model = VQVAE(args.config_path, args.ckpt_path, with_encoder=True)
     model.cuda()
     model.eval()
@@ -54,7 +47,6 @@ def main(args):
             audio = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=args.sample_rate)(audio)
         audio_length = audio.shape[1]
         if audio_length > args.sample_rate * audio_min_length:
-            # audio = normalize(audio)
             if audio_length > max_chunk_size:
                 wav_chunks = split_wav_into_chunks(audio_length, audio, max_chunk_size)
                 for chunk in wav_chunks:
@@ -77,8 +69,6 @@ def main(args):
         else:
             logging.warning('This audio length is too short.')
         
-            # acoustic_token = ort_session.run(None, {ort_session.get_inputs()[0].name: feat.detach().cpu().numpy(),
-            #                                       ort_session.get_inputs()[1].name: np.array([feat.shape[2]], dtype=np.int32)})[0].flatten().tolist()
     torch.save(utt2acoustic_token, '{}/utt2acoustic_token.pt'.format(args.dir))
     logging.info('spend time {}'.format(time.time() - start_time))
 
@@ -88,14 +78,12 @@ if __name__ == "__main__":
     parser.add_argument('--dir',
                         type=str)
     parser.add_argument('--config_path',
-                        type=str)
+                        type=str, default="pretrained_models/InspireMusic-Base/music_tokenizer/config.json")
     parser.add_argument('--ckpt_path',
-                        type=str)
+                        type=str, default="pretrained_models/InspireMusic-Base/music_tokenizer/model.pt")
     parser.add_argument('--sample_rate',
                         default=24000,
                         type=int)
-    # parser.add_argument('--onnx_path',
-    #                     type=str)
     args = parser.parse_args()
     
     main(args)
