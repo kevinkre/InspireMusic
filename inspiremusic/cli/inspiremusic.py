@@ -28,12 +28,16 @@ class InspireMusic:
             model_dir = snapshot_download(model_dir)
         with open('{}/inspiremusic.yaml'.format(model_dir), 'r') as f:
             configs = load_hyperpyyaml(f)
-        self.frontend = InspireMusicFrontEnd(configs['get_tokenizer'],
+        self.frontend = InspireMusicFrontEnd(configs,
+                                          configs['get_tokenizer'],
                                           configs['feat_extractor'],
-                                          '{}/campplus.onnx'.format(model_dir),
-                                          '{}/speech_tokenizer_v1.onnx'.format(model_dir),
-                                          '{}/spk2info.pt'.format(model_dir),
+                                          '{}/llm.pt'.format(model_dir),
+                                          '{}/flow.pt'.format(model_dir),
+                                          '{}/wavtokenizer/model.pt'.format(model_dir),
+                                          '{}/wavtokenizer/config.yaml'.format(model_dir),
                                           instruct,
+                                          fast,
+                                          fp16,
                                           configs['allowed_special'])
         self.model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], no_flow, fp16)
         self.model.load('{}/llm.pt'.format(model_dir),
@@ -47,10 +51,6 @@ class InspireMusic:
         if load_onnx:
             self.model.load_onnx('{}/flow.decoder.estimator.fp32.onnx'.format(model_dir))
         del configs
-
-    def list_avaliable_spks(self):
-        spks = list(self.frontend.spk2info.keys())
-        return spks
 
     def inference_sft(self, text, stream=False, sr=24000):
         # TODO stream mode

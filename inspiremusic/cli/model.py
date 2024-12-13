@@ -21,6 +21,7 @@ from inspiremusic.music_tokenizer.vqvae import VQVAE
 from inspiremusic.wavtokenizer.decoder.pretrained import WavTokenizer
 from torch.cuda.amp import autocast
 import logging
+import os
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -71,12 +72,20 @@ class InspireMusicModel:
             self.flow.load_state_dict(torch.load(flow_model, map_location=self.device))
             self.flow.to(self.device).eval()
         if hift_model is not None:
-            self.music_tokenizer = VQVAE( hift_model + '/config.json',
-                                  hift_model + '/model.pt', with_encoder=True)                    
+            if ".pt" not in hift_model:
+                self.music_tokenizer = VQVAE(hift_model + '/config.json',
+                                    hift_model + '/model.pt', with_encoder=True)
+            else:
+                self.music_tokenizer = VQVAE(os.path.dirname(hift_model) + '/config.json',
+                                    hift_model, with_encoder=True)
             self.music_tokenizer.to(self.device).eval()
-        if self.wavtokenizer is not None:
-            self.wavtokenizer = WavTokenizer.from_pretrained_feat( wavtokenizer_model + '/config.yaml',
-                                  wavtokenizer_model + '/model.pt')                    
+        if wavtokenizer_model is not None:
+            if ".pt" not in wavtokenizer_model:
+                self.wavtokenizer = WavTokenizer.from_pretrained_feat(wavtokenizer_model + '/config.yaml',
+                                    wavtokenizer_model + '/model.pt')
+            else:
+                self.wavtokenizer = WavTokenizer.from_pretrained_feat(os.path.dirname(wavtokenizer_model) + '/config.yaml',
+                                    wavtokenizer_model)
             self.wavtokenizer.to(self.device)
 
     def load_jit(self, llm_text_encoder_model, llm_llm_model, flow_encoder_model):

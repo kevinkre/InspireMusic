@@ -168,7 +168,7 @@ def main():
                             'llm_prompt_audio_token': token, 'llm_prompt_audio_token_len': token_len,
                             'flow_prompt_audio_token': audio_token, 'flow_prompt_audio_token_len': audio_token_len,
                             'prompt_audio_feat': audio_feat, 'prompt_audio_feat_len': audio_feat_len,
-                            'llm_embedding': utt_embedding, 'flow_embedding': utt_embedding}
+                            "embeddings": [time_start, time_end, chorus]}
 
             music_key = utts[0]
             music_audios = []
