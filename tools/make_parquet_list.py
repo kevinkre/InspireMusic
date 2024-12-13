@@ -172,7 +172,7 @@ if __name__ == "__main__":
                 utt2token = torch.load(
                     '{}/{}'.format(args.acoustic_token_dir, fn))
 
-                utts = [utt for utt in utt2token.keys() if utt in utt2text]
+                utts = [utt for utt in utt2token.keys() if utt in utt2text.keys()]
                 if utt2semantic_token:
                     utts = [utt for utt in utts if
                             utt in utt2semantic_token.keys()]
