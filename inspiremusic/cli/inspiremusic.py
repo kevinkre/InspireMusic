@@ -52,10 +52,10 @@ class InspireMusic:
             self.model.load_onnx('{}/flow.decoder.estimator.fp32.onnx'.format(model_dir))
         del configs
 
-    def inference_sft(self, text, stream=False, sr=24000):
+    def inference_text_to_music(self, text, time_start, time_end, chorus, stream=False, sr=24000):
         # TODO stream mode
         for i in tqdm(self.frontend.text_normalize(text, split=True)):
-            model_input = self.frontend.frontend_sft(i)
+            model_input = self.frontend.frontend_text_to_music(i, time_start, time_end, chorus)
             start_time = time.time()
             logging.info('prompt text {}'.format(i))
             for model_output in self.model.inference(**model_input, stream=stream):
@@ -63,6 +63,33 @@ class InspireMusic:
                 logging.info('yield music len {}, rtf {}'.format(music_audios_len, (time.time() - start_time) / music_audios_len))
                 yield model_output
                 start_time = time.time()
+
+    def inference_continuation(self, text, audio, stream=False, sr=24000, max_audio_length=30):
+        # TODO stream mode
+        if text is None:
+            if audio is not None:
+                for i in tqdm(audio):
+                    model_input = self.frontend.frontend_continuation(None, i, time_start, time_end, chorus, sr, max_audio_length)
+                    start_time = time.time()
+                    logging.info('prompt text {}'.format(i))
+                    for model_output in self.model.continuation_inference(**model_input, stream=stream):
+                        music_audios_len = model_output['music_audio'].shape[1] / sr
+                        logging.info('yield music len {}, rtf {}'.format(music_audios_len, (time.time() - start_time) / music_audios_len))
+                        yield model_output
+                        start_time = time.time()
+        else:
+            if audio is not None:
+                for i in tqdm(self.frontend.text_normalize(text, split=True)):
+                    model_input = self.frontend.frontend_continuation(i, audio, time_start, time_end, chorus, sr, max_audio_length)
+                    start_time = time.time()
+                    logging.info('prompt text {}'.format(i))
+                    for model_output in self.model.continuation_inference(**model_input, stream=stream):
+                        music_audios_len = model_output['music_audio'].shape[1] / sr
+                        logging.info('yield music len {}, rtf {}'.format(music_audios_len, (time.time() - start_time) / music_audios_len))
+                        yield model_output
+                        start_time = time.time()
+            else:
+                print("Please input text or audio.")
 
     def inference_zero_shot(self, text, prompt_text, prompt_audio_16k, stream=False, sr=24000):
         prompt_text = self.frontend.text_normalize(prompt_text, split=False)
@@ -74,20 +101,7 @@ class InspireMusic:
                 audio_len = model_output['music_audio'].shape[1] / sr
                 logging.info('yield audio len {}, rtf {}'.format(audio_len, (time.time() - start_time) / audio_len))
                 yield model_output
-                start_time = time.time()
-
-    def inference_cross_lingual(self, text, prompt_audio_16k, stream=False, sr=24000):
-        if self.frontend.instruct is True:
-            raise ValueError('{} do not support cross_lingual inference'.format(self.model_dir))
-        for i in tqdm(self.frontend.text_normalize(text, split=True)):
-            model_input = self.frontend.frontend_cross_lingual(i, prompt_audio_16k)
-            start_time = time.time()
-            logging.info('prompt text {}'.format(i))
-            for model_output in self.model.inference(**model_input, stream=stream):
-                audio_len = model_output['music_audio'].shape[1] / sr
-                logging.info('yield audio len {}, rtf {}'.format(audio_len, (time.time() - start_time) / audioh_len))
-                yield model_output
-                start_time = time.time()
+                start_tiqme = time.time()
 
     def inference_instruct(self, text, spk_id, instruct_text, stream=False, sr=24000):
         if self.frontend.instruct is False:
