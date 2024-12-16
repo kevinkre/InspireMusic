@@ -109,15 +109,17 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   train_engine=torch_ddp
   expr_name="InspireMusic-Base-musiccaps-ft"
 
-  echo "Run train. We support llm and flow traning."
+  echo "Run model training. We support llm and flow traning."
+
   if [ $train_engine == 'deepspeed' ]; then
     echo "Notice deepspeed has its own optimizer config. Modify conf/ds_stage2.json if necessary"
   fi
   cat data/${dataset_name}_train/parquet/data.list > data/${dataset_name}_train.data.list
   cat data/${dataset_name}_dev/parquet/data.list > data/${dataset_name}_dev.data.list
 
-  for model in llm flow; do
-    torchrun --nnodes=1 --nproc_per_node=$num_gpus \
+  # train llm, support fp16 training
+  model="llm"
+  torchrun --nnodes=1 --nproc_per_node=$num_gpus \
         --rdzv_id=$job_id --rdzv_backend="c10d" --rdzv_endpoint="localhost:0" \
       inspiremusic/bin/train.py \
       --train_engine $train_engine \
@@ -134,8 +136,26 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
       --deepspeed_config ./conf/ds_stage2.json \
       --deepspeed.save_states model+optimizer \
       --fp16 \
-      --checkpoint ../../pretrained_models/InspireMusic-Base/llm.pt 
-  done
+      --checkpoint ../../pretrained_models/InspireMusic-Base/llm.pt
+
+  # train flow matching model, only support fp32 training
+  model="flow"
+  torchrun --nnodes=1 --nproc_per_node=$num_gpus \
+        --rdzv_id=$job_id --rdzv_backend="c10d" --rdzv_endpoint="localhost:0" \
+      inspiremusic/bin/train.py \
+      --train_engine $train_engine \
+      --config conf/inspiremusic.yaml \
+      --train_data data/${dataset_name}_train.data.list \
+      --cv_data data/${dataset_name}_dev.data.list \
+      --model $model \
+      --model_dir `pwd`/exp/${expr_name}/$model/$train_engine \
+      --tensorboard_dir `pwd`/tensorboard/${expr_name}/$model/$train_engine \
+      --ddp.dist_backend $dist_backend \
+      --num_workers ${num_workers} \
+      --prefetch ${prefetch} \
+      --pin_memory \
+      --deepspeed_config ./conf/ds_stage2.json \
+      --deepspeed.save_states model+optimizer
 fi
 
 
