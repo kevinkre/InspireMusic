@@ -179,7 +179,7 @@ bash run.sh
 
 ### Training
 
-Here is an example to train LLM model. 
+Here is an example to train LLM model, support FP16 training. 
 ```sh
 torchrun --nnodes=1 --nproc_per_node=8 \
     --rdzv_id=1024 --rdzv_backend="c10d" --rdzv_endpoint="localhost:0" \
@@ -200,7 +200,7 @@ torchrun --nnodes=1 --nproc_per_node=8 \
     --fp16
 ```
 
-Here is an example code to train flow matching model. 
+Here is an example code to train flow matching model, does not support FP16 training.
 ```sh
 torchrun --nnodes=1 --nproc_per_node=8 \
     --rdzv_id=1024 --rdzv_backend="c10d" --rdzv_endpoint="localhost:0" \
@@ -217,8 +217,7 @@ torchrun --nnodes=1 --nproc_per_node=8 \
     --prefetch 100 \
     --pin_memory \
     --deepspeed_config ./conf/ds_stage2.json \
-    --deepspeed.save_states model+optimizer \
-    --fp16
+    --deepspeed.save_states model+optimizer
 ```
 
 ### Inference
