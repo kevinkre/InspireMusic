@@ -46,7 +46,7 @@ def get_args():
     parser.add_argument('--fade_out', default=True, type=bool, required=False, help='add fade out effect to generated audio')
     parser.add_argument('--fade_out_duration', default=1.0, type=float, required=False, help='fade out duration in seconds')
     parser.add_argument('--trim', default=True, type=bool, required=False, help='trim the silence ending of generated audio')
-    parser.add_argument('--format', type=str, default="mp3", required=False,
+    parser.add_argument('--format', type=str, default="wav", required=False,
                         choices=["wav", "mp3", "m4a", "flac"],
                         help='sampling rate of input audio')
     parser.add_argument('--sample_rate', type=int, default=24000, required=False,
