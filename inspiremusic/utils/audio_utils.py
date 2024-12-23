@@ -24,7 +24,6 @@ import random
 import typing as tp
 from functools import partial
 
-# import julius
 import omegaconf
 import torch
 import torchaudio
@@ -41,9 +40,104 @@ from typing import (
     Tuple,
 )
 
+from librosa.filters import mel as librosa_mel_fn
+from scipy.io.wavfile import read
+
 _BoolLike_co = Union[bool, np.bool_]
 _IntLike_co = Union[_BoolLike_co, int, "np.integer[Any]"]
 _FloatLike_co = Union[_IntLike_co, float, "np.floating[Any]"]
+
+def load_wav(full_path):
+    sampling_rate, data = read(full_path)
+    return data, sampling_rate
+
+def dynamic_range_compression(x, C=1, clip_val=1e-5):
+    return np.log(np.clip(x, a_min=clip_val, a_max=None) * C)
+
+
+def dynamic_range_decompression(x, C=1):
+    return np.exp(x) / C
+
+
+def dynamic_range_compression_torch(x, C=1, clip_val=1e-5):
+    return torch.log(torch.clamp(x, min=clip_val) * C)
+
+
+def dynamic_range_decompression_torch(x, C=1):
+    return torch.exp(x) / C
+
+
+def spectral_normalize_torch(magnitudes):
+    output = dynamic_range_compression_torch(magnitudes)
+    return output
+
+
+def spectral_de_normalize_torch(magnitudes):
+    output = dynamic_range_decompression_torch(magnitudes)
+    return output
+
+def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin, fmax, center=False):
+    if torch.min(y) < -1.0:
+        print("min value is ", torch.min(y))
+    if torch.max(y) > 1.0:
+        print("max value is ", torch.max(y))
+
+    # global mel_basis, hann_window  # pylint: disable=global-statement,global-variable-not-assigned
+    mel_basis = {}
+    hann_window = {}  
+    if f"{str(fmax)}_{str(y.device)}" not in mel_basis:
+        mel = librosa_mel_fn(sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax)
+        mel_basis[str(fmax) + "_" + str(y.device)] = torch.from_numpy(mel).float().to(y.device)
+        hann_window[str(y.device)] = torch.hann_window(win_size).to(y.device)
+
+    y = torch.nn.functional.pad(
+        y.unsqueeze(1), (int((n_fft - hop_size) / 2), int((n_fft - hop_size) / 2)), mode="reflect"
+    )
+    y = y.squeeze(1)
+
+    spec = torch.view_as_real(
+        torch.stft(
+            y,
+            n_fft,
+            hop_length=hop_size,
+            win_length=win_size,
+            window=hann_window[str(y.device)],
+            center=center,
+            pad_mode="reflect",
+            normalized=False,
+            onesided=True,
+            return_complex=True,
+        )
+    )
+
+    spec = torch.sqrt(spec.pow(2).sum(-1) + (1e-9))
+
+    spec = torch.matmul(mel_basis[str(fmax) + "_" + str(y.device)], spec)
+    spec = spectral_normalize_torch(spec)
+
+    return spec
+
+def fade_out(audio, sr, fade_duration):
+    """
+    Apply a linear fade-out effect to the given audio waveform.
+    
+    Parameters:
+    audio (numpy array): The audio waveform array.
+    sr (int): Sample rate of the audio.
+    fade_duration (int or float): Duration of the fade-out effect in seconds.
+    
+    Returns:
+    numpy array: The audio with the fade-out effect applied.
+    """
+    fade_samples = int(fade_duration * sr)
+
+    if fade_samples > audio.shape[1]:
+        fade_samples = int(audio.shape[1] * sr / 2)
+
+    fade_out_envelope = np.linspace(1.0, 0.0, fade_samples)
+    audio[:, -fade_samples:] *= fade_out_envelope
+        
+    return audio
 
 def split_wav_into_chunks(num_samples, wav, max_chunk_size, minimum_chunk_size=720):
     num_chunks = (num_samples + max_chunk_size - 1) // max_chunk_size  # Ceiling division

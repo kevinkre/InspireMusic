@@ -52,8 +52,10 @@ def init_distributed(args):
 
 
 def init_dataset_and_dataloader(args, configs):
-    train_dataset = Dataset(args.train_data, data_pipeline=configs['data_pipeline'], mode='train', shuffle=True, partition=True)
-    cv_dataset = Dataset(args.cv_data, data_pipeline=configs['data_pipeline'], mode='train', shuffle=False, partition=False)
+    gan = False
+    data_pipeline = configs['data_pipeline_gan'] if gan is True else configs['data_pipeline']
+    train_dataset = Dataset(args.train_data, data_pipeline=data_pipeline, mode='train', shuffle=True, partition=True)
+    cv_dataset = Dataset(args.cv_data, data_pipeline=data_pipeline, mode='train', shuffle=False, partition=False)
 
     # do not use persistent_workers=True, as whisper tokenizer opens tiktoken file each time when the for loop starts
     train_data_loader = DataLoader(train_dataset,
@@ -106,8 +108,7 @@ def wrap_cuda_model(args, model):
                 num_gpus_per_node=local_world_size,
                 num_nodes=world_size // local_world_size)
     return model
-
-
+       
 def init_optimizer_and_scheduler(args, configs, model):
     if configs['train_conf']['optim'] == 'adam':
         optimizer = optim.Adam(model.parameters(), **configs['train_conf']['optim_conf'])
@@ -193,7 +194,7 @@ def inspiremusic_join(group_join, info_dict):
         return False
 
 
-def batch_forward(model, batch, info_dict):
+def batch_forward(model, batch, info_dict, scaler):
     device = int(os.environ.get('LOCAL_RANK', 0))
 
     dtype = info_dict["dtype"]
@@ -205,7 +206,7 @@ def batch_forward(model, batch, info_dict):
         dtype = torch.float32
 
     if info_dict['train_engine'] == 'torch_ddp':
-        autocast = nullcontext()
+        autocast = torch.cuda.amp.autocast(enabled=scaler is not None)
     else:
         autocast = torch.cuda.amp.autocast(enabled=True, dtype=dtype, cache_enabled=False)
 
@@ -214,21 +215,18 @@ def batch_forward(model, batch, info_dict):
     return info_dict
 
 
-def batch_backward(model, info_dict, scaler=None):
+def batch_backward(model, info_dict, scaler):
     if info_dict["train_engine"] == "deepspeed":
         scaled_loss = model.backward(info_dict['loss_dict']['loss'])
     else:
+        scaled_loss = info_dict['loss_dict']['loss'] / info_dict['accum_grad']
         if scaler is not None:
-            scaled_loss = scaler.scale(info_dict['loss_dict']['loss']) / info_dict['accum_grad']
-            scaled_loss.backward()
+            scaler.scale(scaled_loss).backward()
         else:
-            scaled_loss = info_dict['loss_dict']['loss'] / info_dict['accum_grad']
             scaled_loss.backward()
-        
-    info_dict['loss_dict']['loss'] = info_dict['loss_dict']['loss'] / info_dict['accum_grad'] 
-    # info_dict['loss_dict']['loss'] = scaled_loss
-    return info_dict
 
+    info_dict['loss_dict']['loss'] = scaled_loss
+    return info_dict
 
 def update_parameter_and_lr(model, optimizer, scheduler, info_dict, scaler=None):
     grad_norm = 0.0

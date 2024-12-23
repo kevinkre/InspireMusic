@@ -25,30 +25,32 @@ from hyperpyyaml import load_hyperpyyaml
 from tqdm import tqdm
 from inspiremusic.cli.model import InspireMusicModel
 from inspiremusic.dataset.dataset import Dataset
-
+from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
 
 def get_args():
-    parser = argparse.ArgumentParser(description='inference only with your model')
+    parser = argparse.ArgumentParser(description='inference only with flow model')
     parser.add_argument('--config', required=True, help='config file')
     parser.add_argument('--prompt_data', required=True, help='prompt data file')
-    # parser.add_argument('--prompt_utt2data', required=True, help='prompt data file')
     parser.add_argument('--flow_model', required=True, help='flow model file')
-    parser.add_argument('--llm_model', default=None,required=False, help='flow model file')
+    parser.add_argument('--llm_model', default=None,required=False, help='llm model file')
 
     parser.add_argument('--music_tokenizer', required=True, help='music tokenizer model file')
+    parser.add_argument('--wavtokenizer', required=True, help='wavtokenizer model file')
+    parser.add_argument('--chorus', default="random",required=False, help='chorus tag generation mode, eg. random, verse, chorus, intro.')
+    parser.add_argument('--sample_rate', type=int, default=48000, required=False,
+                        help='sampling rate of generated audio')
+    parser.add_argument('--min_generate_audio_seconds', type=float, default=10.0, required=False,
+                        help='the minimum generated audio length in seconds')
+    parser.add_argument('--max_generate_audio_seconds', type=float, default=30.0, required=False,
+                        help='the maximum generated audio length in seconds')
     parser.add_argument('--gpu',
                         type=int,
                         default=-1,
                         help='gpu id for this rank, -1 for cpu')
-    parser.add_argument('--mode',
-                        default='sft',
-                        choices=['sft', 'zero_shot'],
-                        help='inference mode')
     parser.add_argument('--result_dir', required=True, help='asr result file')
     args = parser.parse_args()
     print(args)
     return args
-
 
 def main():
     args = get_args()
@@ -62,9 +64,18 @@ def main():
     with open(args.config, 'r') as f:
         configs = load_hyperpyyaml(f)
 
-    model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'])
-    model.load(args.llm_model, args.flow_model, args.music_tokenizer)
-    test_dataset = Dataset(args.prompt_data, data_pipeline=configs['data_pipeline'], mode='inference', shuffle=False, partition=False)
+    model = InspireMusicModel(None, configs['flow'], configs['hift'], configs['wavtokenizer'])
+    model.load(args.llm_model, args.flow_model, args.music_tokenizer, args.wavtokenizer)
+
+    if args.llm_model is None:
+        model.llm = None
+    else:
+        model.llm = model.llm.to(torch.float32)
+
+    if args.flow_model is None:
+        model.flow = None
+
+    test_dataset = Dataset(args.prompt_data, data_pipeline=configs['data_pipeline'], mode='inference', shuffle=True, partition=False)
     test_data_loader = DataLoader(test_dataset, batch_size=None, num_workers=0)
 
     del configs
@@ -76,28 +87,60 @@ def main():
             utts = batch["utts"]
             assert len(utts) == 1, "inference mode only support batchsize 1"
 
-            speech_token = batch["speech_token"].to(device)
-            speech_token_len = batch["speech_token_len"].to(device)
-
-            if args.mode == 'sft':
-                model_input = {"speech_token":speech_token, "speech_token_len":speech_token_len}
+            if "semantic_token" in batch:                      
+                token  = batch["semantic_token"].to(device)  
+                token_len  = batch["semantic_token_len"].to(device)   
             else:
-                model_input = {'text': text_token, 'text_len': text_token_len,
-                               'prompt_text': text_token, 'prompt_text_len': text_token_len,
-                               'llm_prompt_speech_token': speech_token, 'llm_prompt_speech_token_len': speech_token_len,
-                               'flow_prompt_speech_token': speech_token, 'flow_prompt_speech_token_len': speech_token_len,
-                               'prompt_speech_feat': speech_feat, 'prompt_speech_feat_len': speech_feat_len,
-                               'llm_embedding': utt_embedding, 'flow_embedding': utt_embedding}
-                               
+                if audio_token is None:  
+                    token = None
+                    token_len = None
+                else:                                                            
+                    token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
+                    token_len  = audio_token_len / 4 
+
+            text_token = batch["text_token"].to(device)
+            text_token_len = batch["text_token_len"].to(device)
+            text = batch["text"]
+
+            if "time_start" not in batch.keys():
+                batch["time_start"] = torch.randint(0, args.min_generate_audio_seconds, (1,)).to(torch.float64)
+            if "time_end" not in batch.keys():
+                batch["time_end"] = torch.randint(args.min_generate_audio_seconds, args.max_generate_audio_seconds, (1,)).to(torch.float64)
+            elif (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) < args.min_generate_audio_seconds:
+                batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
+
+            if "chorus" not in batch.keys():
+                batch["chorus"] = torch.randint(1, 5, (1,))
+            
+            if args.chorus == "random":
+                batch["chorus"] = torch.randint(1, 5, (1,))
+            elif args.chorus == "intro":
+                batch["chorus"] = torch.Tensor([0])
+            elif "verse" in args.chorus:
+                batch["chorus"] = torch.Tensor([1])
+            elif args.chorus == "chorus":
+                batch["chorus"] = torch.Tensor([2])
+            elif args.chorus == "outro":
+                batch["chorus"] = torch.Tensor([4])
+
+            time_start = batch["time_start"].to(device)
+            time_end = batch["time_end"].to(device)
+            chorus = batch["chorus"].to(torch.int)
+
+            text_prompt = f"<|{batch['time_start'].numpy()[0]}|><|{MUSIC_STRUCTURE_LABELS[chorus.numpy()[0]]}|><|{batch['text'][0]}|><|{batch['time_end'].numpy()[0]}|>"
+            chorus = chorus.to(device)
+
+            model_input = {"text": text, "audio_token": token, "audio_token_len": token_len,
+                                "text_token": text_token, "text_token_len": text_token_len,
+                                "embeddings": [time_start, time_end, chorus], "raw_text":text}
+                             
             music_audios = []
             for model_output in model.inference(**model_input):
                 music_audios.append(model_output['music_audio'])
 
-            # music_audios = torch.concat(music_audios, dim=1)
-
             music_key = utts[0]
             music_fn = os.path.join(args.result_dir, '{}.wav'.format(music_key))
-            torchaudio.save(music_fn, music_audios[0], sample_rate=24000)
+            torchaudio.save(music_fn, music_audios[0], sample_rate=args.sample_rate)
             f.write('{} {}\n'.format(music_key, music_fn))
             f.flush()
     f.close()

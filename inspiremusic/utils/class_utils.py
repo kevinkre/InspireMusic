@@ -68,3 +68,4 @@ INSPIREMUSIC_ATTENTION_CLASSES = {
     "selfattn": MultiHeadedAttention,
     "rel_selfattn": RelPositionMultiHeadedAttention,
 }
+

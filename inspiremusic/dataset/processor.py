@@ -21,6 +21,7 @@ import torchaudio
 from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional as F
 import numpy as np
+
 torchaudio.set_audio_backend('soundfile')
 
 AUDIO_FORMAT_SETS = {'flac', 'mp3', 'm4a', 'ogg', 'opus', 'wav', 'wma'}
@@ -42,22 +43,18 @@ def parquet_opener(data, mode='train', audio_data={}):
         url = sample['src']
         try:
             df = pq.read_table(url).to_pandas()
-            # if mode == 'inference':
-            #     df = df.rename(columns={'utt': 'utts'})
             for i in range(len(df)):
-                # if mode == 'inference' and df.loc[i, 'utt'] not in audio_data:
-                #     continue
                 sample.update(dict(df.loc[i]))
-                # if mode == 'train':
-                    # NOTE do not return sample directly, must initialize a new dict
                 yield {**sample}
         except Exception as ex:
             logging.warning('Failed to open {}, ex info {}'.format(url, ex))
 
 
 def filter(data,
-           max_length=10240, #22500 #5min
+           max_length=22500, #22500 #5min #10240
+           max_acoustic_length=45000,
            min_length=10,
+           min_acoustic_length=150,
            token_max_length=200,
            token_min_length=1,
            min_output_input_ratio=0.0005,
@@ -92,16 +89,29 @@ def filter(data,
 
             if "text_token" in sample:
                 new_sample_frames +=  len(sample['text_token'])
+
             if new_sample_frames > max_length or new_sample_frames <  min_length:
                 print(f"skipped 1 item length={new_sample_frames}")
                 continue
+            yield sample
+
+    if mode == "train_flow":
+        for sample in data:
+            if "semantic_token" in sample:
+                new_sample_frames = sample['semantic_token'][0].shape[0]
+
+            if "acoustic_token" in sample:
+                target_sample_frames = sample['acoustic_token'][0].shape[0]
+
+            if new_sample_frames > max_length or new_sample_frames <  min_acoustic_length or new_sample_frames <  min_length or target_sample_frames > max_acoustic_length:
+                print(f"skipped 1 item length={new_sample_frames}, target_length={target_sample_frames}")
+                continue
 
             yield sample
+
     elif mode == "inference":
         for sample in data:
             yield sample
-
-
 
 def resample(data, resample_rate=22050, min_sample_rate=16000, mode='train'):
     """ Resample data.
@@ -130,6 +140,25 @@ def resample(data, resample_rate=22050, min_sample_rate=16000, mode='train'):
             sample['speech'] /= max_val
         yield sample
 
+def truncate(data, truncate_length=24576, mode='train'):
+    """ Truncate data.
+
+        Args:
+            data: Iterable[{key, wav, label, sample_rate}]
+            truncate_length: truncate length
+
+        Returns:
+            Iterable[{key, wav, label, sample_rate}]
+    """
+    for sample in data:
+        waveform = sample['audio']
+        if waveform.shape[1] > truncate_length:
+            start = random.randint(0, waveform.shape[1] - truncate_length)
+            waveform = waveform[:, start: start + truncate_length]
+        else:
+            waveform = torch.concat([waveform, torch.zeros(1, truncate_length - waveform.shape[1])], dim=1)
+        sample['audio'] = waveform
+        yield sample
 
 def compute_fbank(data,
                   feat_extractor,
@@ -306,7 +335,8 @@ def dynamic_batch(data, max_frames_in_batch=12000, mode='train'):
         frames_after_padding = longest_frames * (len(buf) + 1)
         
         if frames_after_padding > max_frames_in_batch:
-            yield buf
+            if len(buf) > 0:
+                yield buf
             buf = [sample]
             longest_frames = new_sample_frames
         else:
@@ -343,47 +373,49 @@ def padding(data, mode='train'):
     if mode == "train":
         for sample in data:
             assert isinstance(sample, list)
+            if len(sample) != 0: 
+                acoustic_feat_len = torch.tensor([x['acoustic_token'].size(0) for x in sample],
+                                            dtype=torch.int32)
+                order = torch.argsort(acoustic_feat_len, descending=True)
+                utts = [sample[i]['utt'] for i in order]
+                acoustic_token = [sample[i]['acoustic_token'].clone().to(torch.int32) for i in order]
+                acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
 
-            acoustic_feat_len = torch.tensor([x['acoustic_token'].size(0) for x in sample],
-                                        dtype=torch.int32)
-            order = torch.argsort(acoustic_feat_len, descending=True)
-
-            utts = [sample[i]['utt'] for i in order]
-            acoustic_token = [torch.tensor(sample[i]['acoustic_token'],dtype=torch.int32) for i in order]
-            acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
-            acoustic_token = pad_sequence(acoustic_token,
-                                        batch_first=True,
-                                        padding_value=0)    
-            
-            text = [sample[i]['text'] for i in order]
-            text_token = [torch.tensor(sample[i]['text_token']).long() for i in order]
-            text_token_len = torch.tensor([i.size(0) for i in text_token], dtype=torch.int32)
-            text_token = pad_sequence(text_token, batch_first=True, padding_value=0)
-            time_start = torch.tensor([sample[i]['time_start'] for i in order])
-            time_end = torch.tensor([sample[i]['time_end'] for i in order])
-            chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in order])
-
-            batch = {
-                "utts": utts,
-                "acoustic_token": acoustic_token,
-                "acoustic_token_len": acoustic_token_len,
-                "time_start": time_start,
-                "time_end": time_end,
-                "chorus": chorus,
-                "text": text,
-                "text_token": text_token,
-                "text_token_len": text_token_len,
-            }
-
-            if "semantic_token" in sample[0]:
-                semantic_token = [torch.tensor(sample[i]['semantic_token'][0],dtype=torch.int32) for i in order]
-                semantic_token_len = torch.tensor([i.size(0) for i in semantic_token], dtype=torch.int32)
-                semantic_token = pad_sequence(semantic_token,
+                acoustic_token = pad_sequence(acoustic_token,
                                             batch_first=True,
-                                            padding_value=0)  
-                batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
+                                            padding_value=0)    
+                
+                text = [sample[i]['text'] for i in order]
+                text_token = [torch.tensor(sample[i]['text_token']).long() for i in order]
+                text_token_len = torch.tensor([i.size(0) for i in text_token], dtype=torch.int32)
+                text_token = pad_sequence(text_token, batch_first=True, padding_value=0)
+                time_start = torch.tensor([sample[i]['time_start'] for i in order])
+                time_end = torch.tensor([sample[i]['time_end'] for i in order])
+                chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in order])
 
-            yield batch
+                batch = {
+                    "utts": utts,
+                    "acoustic_token": acoustic_token,
+                    "acoustic_token_len": acoustic_token_len,
+                    "time_start": time_start,
+                    "time_end": time_end,
+                    "chorus": chorus,
+                    "text": text,
+                    "text_token": text_token,
+                    "text_token_len": text_token_len,
+                }
+
+                if "semantic_token" in sample[0]:
+                    semantic_token = [torch.tensor(sample[i]['semantic_token'][0],dtype=torch.int32) for i in order]
+                    semantic_token_len = torch.tensor([i.size(0) for i in semantic_token], dtype=torch.int32)
+                    semantic_token = pad_sequence(semantic_token,
+                                                batch_first=True,
+                                                padding_value=0)  
+                    batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
+
+                yield batch
+            else:
+                logging.info("WARNING: sample is empty []!")
 
     elif mode == "inference":
         for sample in data:
@@ -398,7 +430,7 @@ def padding(data, mode='train'):
             chorus = torch.tensor([CHORUS[sample[i]['chorus']] for i in range(len(sample))])
 
             if "acoustic_token" in sample[0]:
-                acoustic_token = [torch.tensor(sample[i]['acoustic_token'],dtype=torch.int32) for i in range(len(sample))]
+                acoustic_token = [sample[i]['acoustic_token'].clone().to(torch.int32)  for i in range(len(sample))]
                 acoustic_token_len = torch.tensor([i.size(0) for i in acoustic_token], dtype=torch.int32)
                 acoustic_token = pad_sequence(acoustic_token,
                                             batch_first=True,
@@ -427,4 +459,4 @@ def padding(data, mode='train'):
                                             padding_value=0)  
                 batch.update({"semantic_token":semantic_token,"semantic_token_len":semantic_token_len})
 
-            yield batch
+            yield batch            

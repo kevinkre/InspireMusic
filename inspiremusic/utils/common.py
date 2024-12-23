@@ -18,7 +18,6 @@
 from typing import List
 
 import torch
-
 IGNORE_ID = -1
 
 MUSIC_STRUCTURE_LABELS = ["intro", "verse1", "chorus", "verse2", "outro"]
@@ -120,6 +119,14 @@ def ras_sampling(weighted_scores, decoded_tokens, sampling, top_p=0.8, top_k=25,
         top_ids = random_sampling(weighted_scores, decoded_tokens, sampling)
     return top_ids
 
+def caras_sampling(weighted_scores, decoded_tokens, sampling, top_p=0.8, top_k=25, win_size=10, tau_r=0.1):
+    weighted_scores, cfg_weighted_scores = weighted_scores
+    top_ids = nucleus_sampling(weighted_scores, top_p=top_p, top_k=top_k)
+    rep_num = (torch.tensor(decoded_tokens[-win_size:]).to(weighted_scores.device) == top_ids).sum().item()
+    if rep_num >= win_size * tau_r:
+        top_ids = random_sampling(cfg_weighted_scores, decoded_tokens, sampling)
+    return top_ids
+
 def nucleus_sampling(weighted_scores, top_p=0.8, top_k=25):
     prob, indices = [], []
     cum_prob = 0.0
@@ -150,3 +157,19 @@ def fade_in_out(fade_in_mel, fade_out_mel, window):
     fade_in_mel[:, :, :mel_overlap_len] = fade_in_mel[:, :, :mel_overlap_len] * window[:mel_overlap_len] + \
         fade_out_mel[:, :, -mel_overlap_len:] * window[mel_overlap_len:]
     return fade_in_mel.to(device)
+
+def set_all_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+def mask_to_bias(mask: torch.Tensor, dtype: torch.dtype) -> torch.Tensor:
+    assert mask.dtype == torch.bool
+    assert dtype in [torch.float32, torch.bfloat16, torch.float16]
+    mask = mask.to(dtype)
+    # attention mask bias
+    # NOTE(Mddct): torch.finfo jit issues
+    #     chunk_masks = (1.0 - chunk_masks) * torch.finfo(dtype).min
+    mask = (1.0 - mask) * torch.finfo(dtype).min
+    return mask

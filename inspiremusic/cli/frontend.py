@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from functools import partial
+import onnxruntime
 import torch
 import numpy as np
+import whisper
 from typing import Callable
+import torchaudio.compliance.kaldi as kaldi
 import torchaudio
 import os
 import re
@@ -30,6 +33,8 @@ class InspireMusicFrontEnd:
                  feat_extractor: Callable,
                  llm_model: str,
                  flow_model: str,
+                #  music_tokenizer_ckpt_path: str,
+                #  music_token_config_path: str,
                  tokenizer_ckpt_path: str,
                  tokenizer_config_path: str,
                  instruct: bool = False,
@@ -62,7 +67,7 @@ class InspireMusicFrontEnd:
         assert audio.shape[1] / sample_rate <= max_audio_length, 'do not support extract audio token for audio longer than 30s'
         audio = torch.tensor(audio, dtype=torch.float32).to(self.device)
         _, audio_token = self.wavtokenizer.encode_infer(audio, bandwidth_id=self.bandwidth_id)
-        audio_token = audio_token.squeeze(0).numpy().astype(np.int16)
+        audio_token = audio_token.squeeze(0).numpy().astype(np.int16) 
         audio_token_len = torch.tensor([audio_token.shape[1]], dtype=torch.int32).to(self.device)
         return audio_token, audio_token_len
 

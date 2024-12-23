@@ -17,6 +17,65 @@ from einops import pack, rearrange, repeat
 from matcha.models.components.decoder import SinusoidalPosEmb, Block1D, ResnetBlock1D, Downsample1D, TimestepEmbedding, Upsample1D
 from matcha.models.components.transformer import BasicTransformerBlock
 
+class Transpose(torch.nn.Module):
+    def __init__(self, dim0: int, dim1: int):
+        super().__init__()
+        self.dim0 = dim0
+        self.dim1 = dim1
+
+    def forward(self, x: torch.Tensor):
+        x = torch.transpose(x, self.dim0, self.dim1)
+        return x
+
+class CausalBlock1D(Block1D):
+    def __init__(self, dim: int, dim_out: int):
+        super(CausalBlock1D, self).__init__(dim, dim_out)
+        self.block = torch.nn.Sequential(
+            CausalConv1d(dim, dim_out, 3),
+            Transpose(1, 2),
+            nn.LayerNorm(dim_out),
+            Transpose(1, 2),
+            nn.Mish(),
+        )
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor):
+        output = self.block(x * mask)
+        return output * mask
+
+
+class CausalResnetBlock1D(ResnetBlock1D):
+    def __init__(self, dim: int, dim_out: int, time_emb_dim: int, groups: int = 8):
+        super(CausalResnetBlock1D, self).__init__(dim, dim_out, time_emb_dim, groups)
+        self.block1 = CausalBlock1D(dim, dim_out)
+        self.block2 = CausalBlock1D(dim_out, dim_out)
+
+class CausalConv1d(torch.nn.Conv1d):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int = 1,
+        dilation: int = 1,
+        groups: int = 1,
+        bias: bool = True,
+        padding_mode: str = 'zeros',
+        device=None,
+        dtype=None
+    ) -> None:
+        super(CausalConv1d, self).__init__(in_channels, out_channels,
+                                           kernel_size, stride,
+                                           padding=0, dilation=dilation,
+                                           groups=groups, bias=bias,
+                                           padding_mode=padding_mode,
+                                           device=device, dtype=dtype)
+        assert stride == 1
+        self.causal_padding = (kernel_size - 1, 0)
+
+    def forward(self, x: torch.Tensor):
+        x = F.pad(x, self.causal_padding)
+        x = super(CausalConv1d, self).forward(x)
+        return x
 
 class ConditionalDecoder(nn.Module):
     def __init__(

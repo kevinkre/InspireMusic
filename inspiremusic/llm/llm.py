@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from typing import Dict, Optional, Callable, List, Generator
 import torch
 from torch import nn
@@ -24,6 +23,7 @@ from torch import Tensor
 from math import log
 from einops import rearrange, reduce, repeat
 import logging
+import torch.nn.functional as F
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -51,7 +51,6 @@ class LLM(torch.nn.Module):
             text_encoder_conf: Dict = None,      
             length_normalized_loss: bool = True,
             lsm_weight: float = 0.0,
-            spk_embed_dim: int = 192,
             **kwargs,
     ):
         super().__init__()
@@ -89,7 +88,7 @@ class LLM(torch.nn.Module):
 
         # 3. [Optional] build audio token related modules
         self.speech_embedding = torch.nn.Embedding(audio_token_size, llm_input_size)
-        self.spk_embed_affine_layer = torch.nn.Linear(spk_embed_dim, llm_input_size)
+        self.spk_embed_affine_layer = torch.nn.Linear(192, llm_input_size)
         self.num_codebooks = 4
         # 4. sampling method
         self.sampling = sampling
@@ -199,6 +198,9 @@ class LLM(torch.nn.Module):
         time_end = batch['time_end'].to(device)
         chorus = batch['chorus'].to(device)
 
+        # 1. prepare llm_target
+        # 1. encode text_token
+
         if self.train_cfg_ratio > 0:
             # Classifier-Free Guidance
             text_token,text_token_len = self.cfg_dropout(text_token,text_token_len,self.train_cfg_ratio)
@@ -211,7 +213,8 @@ class LLM(torch.nn.Module):
         text_token, text_token_len = self.encode(text_token, text_token_len)
         
         # Time Embedding & chorus embedding
-        time_start_embed = self.time_embedding(time_start).to(text_token.dtype)
+
+        time_start_embed = self.time_embedding(time_start).to(text_token.dtype) 
         time_end_embed = self.time_embedding(time_end).to(text_token.dtype) 
         chorus_embed = self.chorus_embedding(chorus)
 
@@ -249,6 +252,8 @@ class LLM(torch.nn.Module):
             self,
             text: torch.Tensor,
             text_len: torch.Tensor,
+            audio_token: torch.Tensor,
+            audio_token_len: torch.Tensor,
             prompt_text: torch.Tensor,
             prompt_text_len: torch.Tensor,
             prompt_audio_token: torch.Tensor,
@@ -256,40 +261,60 @@ class LLM(torch.nn.Module):
             embeddings: List,
             sampling: int = 50,
             duration_to_gen: float = 30,
+            task: str = "continuation",
             token_rate: int = 75,
+            limit_audio_prompt_len: int = 5,
     ) -> Generator[torch.Tensor, None, None]:
         device = text.device
-        text = torch.concat([prompt_text, text], dim=1)
-        text_len += prompt_text_len
-        infer_cfg = self.infer_cfg_ratio > 1.0
-        if infer_cfg:
-            text_cfg = self.text_embedding(text.new_zeros(text.shape))
 
-        text = self.text_embedding(text)
-        
-        # 1. encode text
-        text, text_len = self.encode(text, text_len)
+        if text is not None:
+            text = torch.concat([prompt_text, text], dim=1)
+            text_len += prompt_text_len
+            infer_cfg = self.infer_cfg_ratio > 1.0
+            if infer_cfg:
+                text_cfg = self.text_embedding(text.new_zeros(text.shape))
+            text = self.text_embedding(text)
+            
+            # 1. encode text
+            text, text_len = self.encode(text, text_len)
 
         # 2. encode embedding
         if embeddings is not None:
             time_start, time_end, chorus = embeddings
-            time_start_embed = self.time_embedding(time_start).reshape(1, 1, -1)
-            time_end_embed = self.time_embedding(time_end).reshape(1, 1, -1)
-            chorus_embed = self.chorus_embedding(chorus).reshape(1, 1, -1)
+            time_start_embed = self.time_embedding(time_start).reshape(1, 1, -1)#.half()
+            time_end_embed = self.time_embedding(time_end).reshape(1, 1, -1)#.half()
+            chorus_embed = self.chorus_embedding(chorus).reshape(1, 1, -1)#.half()
         # 3. concat llm_input
         sos_eos_emb = self.llm_embedding.weight[self.sos_eos].reshape(1, 1, -1)
         task_id_emb = self.llm_embedding.weight[self.task_id].reshape(1, 1, -1)
+        
+        if audio_token_len !=0 :
+            audio_token = audio_token[:,:(limit_audio_prompt_len*token_rate)]
+            audio_token_emb = self.speech_embedding(audio_token)
+            # audio_token_emb = audio_token
+        else:
+            audio_token_emb = torch.zeros(1, 0, self.llm_input_size, dtype=text.dtype).to(device)
 
         if prompt_audio_token_len != 0:
             prompt_audio_token_emb = self.speech_embedding(prompt_audio_token)
         else:
             prompt_audio_token_emb = torch.zeros(1, 0, self.llm_input_size, dtype=text.dtype).to(device)
+        # Check if removing prompt audio token will fail decoding.
 
-        lm_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text, prompt_audio_token_emb, task_id_emb], dim=1)
-        if infer_cfg:
-            audio_cfg = self.speech_embedding(prompt_audio_token.new_zeros(prompt_audio_token.shape))
-            lm_cf_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text_cfg, audio_cfg, task_id_emb], dim=1)
-            lm_input = torch.cat([lm_input, lm_cf_input], 0)
+        if task=="continuation":
+            lm_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text, task_id_emb, audio_token_emb], dim=1)
+
+            if infer_cfg:
+                audio_cfg = self.speech_embedding(audio_token.new_zeros(audio_token.shape))
+                lm_cf_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text_cfg, task_id_emb, audio_cfg], dim=1)
+                lm_input = torch.cat([lm_input, lm_cf_input], 0)
+        else:
+            lm_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text, prompt_audio_token_emb, task_id_emb], dim=1)
+        
+            if infer_cfg:
+                audio_cfg = self.speech_embedding(prompt_audio_token.new_zeros(prompt_audio_token.shape))
+                lm_cf_input = torch.concat([sos_eos_emb, time_start_embed, time_end_embed, chorus_embed, text_cfg, audio_cfg, task_id_emb], dim=1)
+                lm_input = torch.cat([lm_input, lm_cf_input], 0)
 
         # 4. cal min/max_length
         min_len = duration_to_gen * token_rate
@@ -300,17 +325,16 @@ class LLM(torch.nn.Module):
         out_tokens = []
         offset = 0
         state = None
-        for i in range(max_len):
-            y_pred,_, state = self.llm.forward_one_step(lm_input,torch.ones(lm_input.shape[0], lm_input.shape[1],
-                                    device=lm_input.device).to(torch.bool),cache=state)
+        for i in range(int(max_len)):
+            y_pred,_, state = self.llm.forward_one_step(lm_input, torch.ones(lm_input.shape[0], lm_input.shape[1], device=lm_input.device).to(torch.bool), cache=state)
             logits = self.llm_decoder(y_pred[:, -1])
             if infer_cfg:
+                # perform context free guidance
                 logits_cf = logits[1]
                 logits = logits[0]
                 logits =  self.infer_cfg_ratio  * logits + (1- self.infer_cfg_ratio ) *  logits_cf 
 
             logp = logits.log_softmax(dim=-1)
-
             logp = logp.squeeze(dim=0)
             top_ids = self.sampling_ids(logp, out_tokens, sampling, ignore_eos= i < min_len ).item()
             if top_ids == self.audio_token_size:

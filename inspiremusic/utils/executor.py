@@ -21,6 +21,7 @@ import torch
 import torch.distributed as dist
 
 from inspiremusic.utils.train_utils import update_parameter_and_lr, log_per_step, log_per_save, batch_forward, batch_backward, save_model, inspiremusic_join
+from inspiremusic.utils.data_utils import batch_processing
 from torch.cuda.amp import GradScaler, autocast
 
 class Executor:
@@ -65,7 +66,7 @@ class Executor:
 
                 with context():
                     with autocast(enabled=scaler is not None):
-                        info_dict = batch_forward(model, batch_dict, info_dict)
+                        info_dict = batch_forward(model, batch_dict, info_dict, scaler)
                         info_dict = batch_backward(model, info_dict, scaler)
 
                 info_dict = update_parameter_and_lr(model, optimizer, scheduler, info_dict, scaler)
@@ -97,17 +98,22 @@ class Executor:
 
             num_utts = len(batch_dict["utts"])
             total_num_utts += num_utts
+
+            if capped_at>0: 
+                if stop <= 0:  
+                    continue
+                else:
+                    stop -= 1
+                
             with autocast(enabled=scaler is not None):
-                info_dict = batch_forward(model, batch_dict, info_dict)
+                info_dict = batch_forward(model, batch_dict, info_dict, scaler)
 
             for k, v in info_dict['loss_dict'].items():
                 if k not in total_loss_dict:
                     total_loss_dict[k] = []
                 total_loss_dict[k].append(v.item() * num_utts)
             log_per_step(None, info_dict)
-            if stop <=0:
-                break
-            stop -= 1
+
         for k, v in total_loss_dict.items():
             total_loss_dict[k] = sum(v) / total_num_utts
         info_dict['loss_dict'] = total_loss_dict

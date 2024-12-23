@@ -15,6 +15,7 @@ import torch
 import torch.nn.functional as F
 from matcha.models.components.flow_matching import BASECFM
 
+
 class ConditionalCFM(BASECFM):
     def __init__(self, in_channels, cfm_params, estimator: torch.nn.Module = None):
         super().__init__(
@@ -22,9 +23,9 @@ class ConditionalCFM(BASECFM):
             cfm_params=cfm_params,
         )
         self.t_scheduler = cfm_params.t_scheduler
-        # set the Classifier-Free Guidance rate
         self.training_cfg_rate = cfm_params.training_cfg_rate
         self.inference_cfg_rate = cfm_params.inference_cfg_rate
+        # Just change the architecture of the estimator here
         self.estimator = estimator
 
     @torch.inference_mode()
@@ -97,7 +98,7 @@ class ConditionalCFM(BASECFM):
     def forward_estimator(self, x, mask, mu, t, spks, cond):
         if isinstance(self.estimator, torch.nn.Module):
             return self.estimator.forward(x, mask, mu, t, spks, cond)
-        else:
+        elif isinstance(self.estimator, onnxruntime.InferenceSession):
             ort_inputs = {
                 'x': x.cpu().numpy(),
                 'mask': mask.cpu().numpy(),
@@ -108,6 +109,22 @@ class ConditionalCFM(BASECFM):
             }
             output = self.estimator.run(None, ort_inputs)[0]
             return torch.tensor(output, dtype=x.dtype, device=x.device)
+        else:
+            self.estimator.set_input_shape('x', (2, 80, x.size(2)))
+            self.estimator.set_input_shape('mask', (2, 1, x.size(2)))
+            self.estimator.set_input_shape('mu', (2, 80, x.size(2)))
+            self.estimator.set_input_shape('t', (2,))
+            self.estimator.set_input_shape('spks', (2, 80))
+            self.estimator.set_input_shape('cond', (2, 80, x.size(2)))
+            # run trt engine
+            self.estimator.execute_v2([x.contiguous().data_ptr(),
+                                       mask.contiguous().data_ptr(),
+                                       mu.contiguous().data_ptr(),
+                                       t.contiguous().data_ptr(),
+                                       spks.contiguous().data_ptr(),
+                                       cond.contiguous().data_ptr(),
+                                       x.data_ptr()])
+            return x
 
     def compute_loss(self, x1, mask, mu, spks=None, cond=None):
         """Computes diffusion loss
@@ -129,12 +146,10 @@ class ConditionalCFM(BASECFM):
         """
         b, _, t = mu.shape
         
-        # random timestep
         t = torch.rand([b, 1, 1], device=mu.device, dtype=mu.dtype)
         if self.t_scheduler == 'cosine':
             t = 1 - torch.cos(t * 0.5 * torch.pi)
         
-        # sample noise p(x_0)
         z = torch.randn_like(x1)
         y = (1 - (1 - self.sigma_min) * t) * z + t * x1
         u = x1 - (1 - self.sigma_min) * z
@@ -143,10 +158,10 @@ class ConditionalCFM(BASECFM):
         if self.training_cfg_rate > 0:
             cfg_mask = torch.rand(b, device=x1.device) > self.training_cfg_rate
             mu = mu * cfg_mask.view(-1, 1, 1)
-            # spks = spks * cfg_mask.view(-1, 1)
             if cond is not None:
                 cond = cond * cfg_mask.view(-1, 1, 1)
 
         pred = self.estimator(y, mask, mu, t.squeeze(), spks, cond)
         loss = F.mse_loss(pred * mask, u * mask, reduction="sum") / (torch.sum(mask) * u.shape[1])
         return loss, y
+
