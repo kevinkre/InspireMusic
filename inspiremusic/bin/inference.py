@@ -165,7 +165,6 @@ def main():
                     token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
                     token_len  = audio_token_len / 4   
 
-            print(f"input: hificodec: {audio_token_len}, wavtoken: {token_len}")
             if args.task in ['text-to-music', 'continuation']:
                 # text to music, music continuation
                 model_input = {"text": text, "audio_token": token, "audio_token_len": token_len,
