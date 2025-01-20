@@ -33,12 +33,12 @@ for task in 'text-to-music' 'continuation'; do
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
       --chorus verse \
+      --output_sample_rate 48000 \
       --min_generate_audio_seconds 5 \
       --max_generate_audio_seconds 30 \
       --result_dir `pwd`/exp/${model_name}/${task}_${expr_name}
-#   if use InspireMusic-Base-Hifi model, please set output sample rate to 48kHz
-#      --output_sample_rate 48000
+#   if use InspireMusic-Base-24kHz model, please set output sample rate to 24kHz
 #   use fast inference mode
-#      --fast # fast mode
+#      --fast # fast mode without flow matching
   echo `pwd`/exp/${model_name}/${task}_${expr_name}
 done

@@ -51,6 +51,7 @@ class LLM(torch.nn.Module):
             text_encoder_conf: Dict = None,      
             length_normalized_loss: bool = True,
             lsm_weight: float = 0.0,
+            frozen_input_embed: bool = False,
             **kwargs,
     ):
         super().__init__()
