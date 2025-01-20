@@ -104,10 +104,8 @@ def init_weights(m, mean=0.0, std=0.01):
 
 def topk_sampling(weighted_scores, decoded_tokens, sampling, top_p=0.8, top_k=25, win_size=10, tau_r=0.1):
     zeros = weighted_scores.new_ones(weighted_scores.shape) * float('-inf')
-
     values,indices =  torch.topk(weighted_scores,top_k)
     zeros.scatter_(-1, indices, values)
-
     return random_sampling(zeros,decoded_tokens,sampling)
 
 # Repetition Aware Sampling in VALL-E 2
