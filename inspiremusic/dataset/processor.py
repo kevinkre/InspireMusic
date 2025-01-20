@@ -27,6 +27,9 @@ torchaudio.set_audio_backend('soundfile')
 AUDIO_FORMAT_SETS = {'flac', 'mp3', 'm4a', 'ogg', 'opus', 'wav', 'wma'}
 CHORUS = {"intro":0, "chorus":1, "verse1":2, "verse2":3,"verse":2,"outro":4}
 
+metadata_pattern = re.compile(r'^\[(ti|ar|al|by|offset):.*\]$')
+timestamp_pattern = re.compile(r'^\[\d{2}:\d{2}\.\d{2}\](.*)$')
+
 def parquet_opener(data, mode='train', audio_data={}):
     """ Give url or local file, return file descriptor
         Inplace operation.
@@ -43,12 +46,40 @@ def parquet_opener(data, mode='train', audio_data={}):
         url = sample['src']
         try:
             df = pq.read_table(url).to_pandas()
-            for i in range(len(df)):
+            for i in df.index:
                 sample.update(dict(df.loc[i]))
                 yield {**sample}
         except Exception as ex:
             logging.warning('Failed to open {}, ex info {}'.format(url, ex))
 
+def clean_lyrics(data, mode="train"):
+    for sample in data:
+        lyrics = sample["text"]
+        cleaned = []
+        for line in lyrics.splitlines():
+            if metadata_pattern.match(line):
+                continue
+            timestamp_match = timestamp_pattern.match(line)
+            if timestamp_match:
+                lyric = timestamp_match.group(1).strip()
+                if lyric:
+                    cleaned.append(lyric)
+            else:
+                if line.strip():
+                    cleaned.append(line.strip())
+        sample["text"] = '\n'.join(cleaned)
+        yield sample
+
+def cut_by_length(data, max_length=8000, num_times=4, mode="train"):
+    for sample in data:
+        if "semantic_token" in sample:
+            sample["semantic_token"] = [
+                sample["semantic_token"][0][:max_length]]
+        if "acoustic_token" not in sample:
+            sample["acoustic_token"] = sample["speech_token"]
+        sample["acoustic_token"] = sample["acoustic_token"][:max_length * num_times]
+
+        yield sample
 
 def filter(data,
            max_length=22500, #22500 #5min #10240

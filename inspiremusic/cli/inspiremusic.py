@@ -21,7 +21,7 @@ from inspiremusic.cli.model import InspireMusicModel
 from inspiremusic.utils.file_utils import logging
 
 class InspireMusic:
-    def __init__(self, model_dir, fast = False, fp16=True):
+    def __init__(self, model_dir, load_jit=False, load_onnx=False, fast = False, fp16=True):
         instruct = True if '-Instruct' in model_dir else False
         self.model_dir = model_dir
         if not os.path.exists(model_dir):

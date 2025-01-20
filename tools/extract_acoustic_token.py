@@ -19,7 +19,7 @@ from tqdm import tqdm
 import numpy as np
 import torchaudio
 from inspiremusic.utils.audio_utils import normalize, split_wav_into_chunks
-from inspiremusic.hificodec.vqvae import VQVAE
+from inspiremusic.music_tokenizer.vqvae import VQVAE
 import time
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

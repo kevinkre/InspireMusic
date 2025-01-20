@@ -51,7 +51,7 @@ def get_args():
                         help='sampling rate of input audio')
     parser.add_argument('--sample_rate', type=int, default=24000, required=False,
                         help='sampling rate of input audio')
-    parser.add_argument('--output_sample_rate', type=int, default=48000, required=False,
+    parser.add_argument('--output_sample_rate', type=int, default=48000, required=False, choices=[24000, 48000],
                         help='sampling rate of generated output audio')
     parser.add_argument('--min_generate_audio_seconds', type=float, default=10.0, required=False,
                         help='the minimum generated audio length in seconds')
@@ -119,10 +119,17 @@ def main():
 
             if "time_start" not in batch.keys():
                 batch["time_start"] = torch.randint(0, args.min_generate_audio_seconds, (1,)).to(torch.float64)
+
+            if batch["time_start"].numpy()[0] > 300:
+                batch["time_start"] = torch.Tensor([0]).to(torch.float64)
+
             if "time_end" not in batch.keys():
-                batch["time_end"] = torch.randint(args.min_generate_audio_seconds, args.max_generate_audio_seconds, (1,)).to(torch.float64)
-            elif (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) < args.min_generate_audio_seconds:
                 batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
+            else:
+                if (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) < args.min_generate_audio_seconds:
+                    batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
+                elif (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) > args.max_generate_audio_seconds:
+                    batch["time_end"] = torch.Tensor([(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds)]).to(torch.float64)
 
             if "chorus" not in batch.keys():
                 batch["chorus"] = torch.randint(1, 5, (1,))
@@ -137,6 +144,8 @@ def main():
                 batch["chorus"] = torch.Tensor([2])
             elif args.chorus == "outro":
                 batch["chorus"] = torch.Tensor([4])
+            else:
+                batch["chorus"] = batch["chorus"]
 
             time_start = batch["time_start"].to(device)
             time_end = batch["time_end"].to(device)
@@ -163,7 +172,7 @@ def main():
                     token_len = None
                 else:                                                            
                     token = audio_token.view(audio_token.size(0),-1,4)[:,:,0]
-                    token_len  = audio_token_len / 4   
+                    token_len  = audio_token_len / 4
 
             if args.task in ['text-to-music', 'continuation']:
                 # text to music, music continuation
@@ -197,6 +206,7 @@ def main():
                 music_audio = trim_audio(music_audios[0], sample_rate=args.output_sample_rate, threshold=0.05, min_silence_duration=0.8)
             else:
                 music_audio = music_audios[0]
+
             if music_audio.shape[0] != 0:
                 if music_audio.shape[1] > max_generate_audio_length:
                     music_audio = music_audio[:,:max_generate_audio_length]

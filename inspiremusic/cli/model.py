@@ -66,8 +66,10 @@ class InspireMusicModel:
         if llm_model is not None:
             self.llm.load_state_dict(torch.load(llm_model, map_location=self.device))
             self.llm.to(self.device).eval()
-            if self.fp16 is True:
-                self.llm.half()
+        else:
+            self.llm = None
+            # if self.fp16 is True:
+            #     self.llm.half()
         if flow_model is not None:
             self.flow.load_state_dict(torch.load(flow_model, map_location=self.device))
             self.flow.to(self.device).eval()
@@ -119,7 +121,7 @@ class InspireMusicModel:
                                             prompt_audio_token=llm_prompt_audio_token.to(self.device),
                                             prompt_audio_token_len=torch.tensor([llm_prompt_audio_token.shape[1]], dtype=torch.int32).to(self.device),
                                             embeddings=embeddings,
-                                            sampling=350,
+                                            sampling=50,
                                             duration_to_gen=duration_to_gen,
                                             task=task,
                                             ):
