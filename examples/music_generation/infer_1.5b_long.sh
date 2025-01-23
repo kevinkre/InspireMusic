@@ -16,7 +16,7 @@
 
 export TOKENIZERS_PARALLELISM=False
 
-model_name="InspireMusic-Base"
+model_name="InspireMusic-1.5B-Long"
 pretrained_model_dir=../../pretrained_models/${model_name}
 dataset_name=samples
 
@@ -26,7 +26,7 @@ expr_name="inspiremusic_${dataset_name}"
 for task in 'text-to-music' 'continuation'; do
   python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
-      --config conf/inspiremusic.yaml \
+      --config conf/inspiremusic_1.5b_long.yaml \
       --prompt_data data/${dataset_name}/parquet/data.list \
       --flow_model $pretrained_model_dir/flow.pt \
       --llm_model $pretrained_model_dir/llm.pt \
