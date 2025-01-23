@@ -83,7 +83,7 @@ InspireMusic is a fundamental AIGC toolkit designed for music, song, and audio g
 
 ## Introduction
 > [!Note]
-> This repo contains the algorithm infrastructure and some simple examples.
+> This repo contains the algorithm infrastructure and some simple examples. Currently only support English text prompts.
 
 > [!Tip]
 > To explore the performance, please refer to [InspireMusic Demo Page](https://iris2c.github.io/InspireMusic). We will open-source InspireMusic models and HuggingFace Space soon.
