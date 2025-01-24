@@ -311,7 +311,7 @@ done
 
 ---
 ### Friend Links
-Checkout some awesome Github repositories from Speech Lab of Institute for Intelligent Computing, Alibaba Group.
+Checkout some awesome Github repositories from Tongyi Lab, Alibaba Group.
 
 <p align="center">
 <a href="https://github.com/modelscope/ClearerVoice-Studio" target="_blank">
