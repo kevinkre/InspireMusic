@@ -168,7 +168,7 @@ The table below presents the links to the ModelScope and Huggingface model hub. 
 | InspireSong-1.5B                      | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                                                                                                                                                                          | Pre-trained Song Generation 1.5B Model, 48kHz stereo                               |
 | InspireAudio-1.5B                     | [![model](https://img.shields.io/badge/ModelScope-Model-lightgrey.svg)]() [![model](https://img.shields.io/badge/HuggingFace-Model-lightgrey.svg)]()                                                                                                                                                                                          | Pre-trained Audio Generation 1.5B Model, 48kHz stereo                              |
 | Wavtokenizer[<sup>[1]</sup>](https://openreview.net/forum?id=yBlVlS2Fd9) (75Hz) | [![model](https://img.shields.io/badge/ModelScope-Model-green.svg)](https://modelscope.cn/models/iic/InspireMusic-1.5B-Long/file/view/master?fileName=wavtokenizer%252Fmodel.pt) [![model](https://img.shields.io/badge/HuggingFace-Model-green.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-1.5B-Long/tree/main/wavtokenizer)       | An extreme low bitrate audio tokenizer for music with one codebook at 24kHz audio. |
-| Music_tokenizer (75Hz)                | [![model](https://img.shields.io/badge/ModelScope-Model-green.svg)](https://modelscope.cn/models/iic/InspireMusic-1.5B-24kHz/file/view/master?fileName=music_tokenizer%252Fmodel.pt) [![model](https://img.shields.io/badge/HuggingFace-Model-green.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-1.5B-24kHz/tree/main/music_tokenizer) | A music tokenizer based on HifiCodec at 24kHz audio.                               |
+| Music_tokenizer (75Hz)                | [![model](https://img.shields.io/badge/ModelScope-Model-green.svg)](https://modelscope.cn/models/iic/InspireMusic-1.5B-24kHz/file/view/master?fileName=music_tokenizer%252Fmodel.pt) [![model](https://img.shields.io/badge/HuggingFace-Model-green.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-1.5B-24kHz/tree/main/music_tokenizer) | A music tokenizer based on HifiCodec<sup>[2]</sup> at 24kHz audio.                 |
 | Music_tokenizer (150Hz)               | [![model](https://img.shields.io/badge/ModelScope-Model-green.svg)](https://modelscope.cn/models/iic/InspireMusic-1.5B-Long/file/view/master?fileName=music_tokenizer%252Fmodel.pt) [![model](https://img.shields.io/badge/HuggingFace-Model-green.svg)](https://huggingface.co/FunAudioLLM/InspireMusic-1.5B-Long/tree/main/music_tokenizer) | A music tokenizer based on HifiCodec at 48kHz audio.                               |
 
 ## Basic Usage
@@ -351,7 +351,7 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 
 ## Acknowledge
 
-1. We borrowed a lot of code from [CosyVoice](https://github.com/FunAudioLLM/CosyVoice).
+1. We borrowed a lot of code from [CosyVoice<sup>[3]</sup>](https://github.com/FunAudioLLM/CosyVoice).
 3. We borrowed a lot of code from [WavTokenizer](https://github.com/jishengpeng/WavTokenizer).
 4. We borrowed a lot of code from [AcademiCodec](https://github.com/yangdongchao/AcademiCodec).
 5. We borrowed a lot of code from [FunASR](https://github.com/modelscope/FunASR).
@@ -359,17 +359,11 @@ Checkout some awesome Github repositories from Speech Lab of Institute for Intel
 7. We borrowed a lot of code from [Matcha-TTS](https://github.com/shivammehta25/Matcha-TTS).
 9. We borrowed a lot of code from [WeNet](https://github.com/wenet-e2e/wenet).
 
-## Citations
+## References
 
-```bibtex
-@inproceedings{ji2024wavtokenizerefficientacousticdiscrete,
-      title={WavTokenizer: an Efficient Acoustic Discrete Codec Tokenizer for Audio Language Modeling}, 
-      author={Shengpeng Ji and Ziyue Jiang and Wen Wang and Yifu Chen and Minghui Fang and Jialong Zuo and Qian Yang and Xize Cheng and Zehan Wang and Ruiqi Li and Ziang Zhang and Xiaoda Yang and Rongjie Huang and Yidi Jiang and Qian Chen and Siqi Zheng and Wen Wang and Zhou Zhao},
-      booktitle={The Thirteenth International Conference on Learning Representations},
-      year={2025},
-      url={https://openreview.net/forum?id=yBlVlS2Fd9}
-}
-```
+[1] Shengpeng Ji, Ziyue Jiang, Wen Wang, Yifu Chen, Minghui Fang, Jialong Zuo, Qian Yang, Xize Cheng, Zehan Wang, Ruiqi Li, Ziang Zhang, Xiaoda Yang, Rongjie Huang, Yidi Jiang, Qian Chen, Siqi Zheng, Wen Wang, Zhou Zhao, WavTokenizer: an Efficient Acoustic Discrete Codec Tokenizer for Audio Language Modeling, The Thirteenth International Conference on Learning Representations, 2025.
+[2] Yang, Dongchao, Songxiang Liu, Rongjie Huang, Jinchuan Tian, Chao Weng, and Yuexian Zou, Hifi-codec: Group-residual vector quantization for high fidelity audio codec, arXiv preprint arXiv:2305.02765, 2023.
+[3] Du, Zhihao, Qian Chen, Shiliang Zhang, Kai Hu, Heng Lu, Yexin Yang, Hangrui Hu et al. Cosyvoice: A scalable multilingual zero-shot text-to-speech synthesizer based on supervised semantic tokens. arXiv preprint arXiv:2407.05407, 2024. 
 
 ## Disclaimer
 The content provided above is for academic purposes only and is intended to demonstrate technical capabilities. Some examples are sourced from the internet. If any content infringes on your rights, please contact us to request its removal.
