@@ -177,7 +177,16 @@ At the moment, InspireMusic contains the training code and inference code for [m
 
 ### Quick Start
 
-Here is a quick start running script to do music generation task including data preparation pipeline, model training, inference. 
+Here is a quick example inference script for music generation. 
+``` sh
+cd InspireMusic
+mkdir -p pretrained_models
+git clone https://www.modelscope.cn/iic/InspireMusic-1.5B-Long.git pretrained_models/InspireMusic-1.5B-Long
+cd examples/music_generation
+bash infer_1.5b_long.sh
+```
+
+Here is a quick start running script to run music generation task including data preparation pipeline, model training, inference. 
 ``` sh
 cd InspireMusic/examples/music_generation/
 bash run.sh
