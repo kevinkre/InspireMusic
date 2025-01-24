@@ -32,10 +32,10 @@ for task in 'text-to-music' 'continuation'; do
       --llm_model $pretrained_model_dir/llm.pt \
       --music_tokenizer $pretrained_model_dir/music_tokenizer \
       --wavtokenizer $pretrained_model_dir/wavtokenizer \
-      --chorus verse \
+      --chorus default \
       --output_sample_rate 48000 \
       --min_generate_audio_seconds 5.0 \
-      --max_generate_audio_seconds 30.0 \
+      --max_generate_audio_seconds 300.0 \
       --result_dir `pwd`/exp/${model_name}/${task}_${expr_name}
 #   if use InspireMusic-xxxx-24kHz model, please set output sample rate to 24kHz
 #      --output_sample_rate 24000 \
