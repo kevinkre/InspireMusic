@@ -60,7 +60,7 @@
 [//]: # (        <img alt="Discussion posts" src="https://img.shields.io/github/discussions/FunAudioLLM/InspireMusic?labelColor=%20%239b8afb&color=%20%237a5af8"></a>)
 </p>
 
-InspireMusic is a fundamental AIGC toolkit and models designed for music, song, and audio generation using PyTorch, proposed by Tongyi Lab, Alibaba Group. 
+InspireMusic is a fundamental AIGC toolkit and models designed for music, song, and audio generation using PyTorch. 
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/FunAudioLLM/InspireMusic) Please support our community project 💖 by starring it on GitHub 加⭐支持 🙏 
 
