@@ -103,7 +103,7 @@ git submodule update --init --recursive
 ```
 
 ### Install
-InspireMusic requires Python 3.8, PyTorch 2.1.0. To install InspireMusic, you can run one of the following:
+InspireMusic requires Python 3.8, PyTorch 2.0.1. To install InspireMusic, you can run one of the following:
 
 - Install Conda: please see https://docs.conda.io/en/latest/miniconda.html
 - Create Conda env:
@@ -117,6 +117,7 @@ pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --tru
 # install flash attention to speedup training
 pip install flash-attn --no-build-isolation
 ```
+Currently support on CUDA Version 11.x.
 
 - Install within the package:
 ```sh
