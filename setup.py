@@ -93,9 +93,9 @@ setup(
     name="inspiremusic",
     version=version,
     url="https://github.com/FunAudioLLM/InspireMusic.git",
-    author="Speech Lab of Institute for Intelligent Computing, Alibaba Group",
+    author="Tongyi Lab, Alibaba Group",
     author_email="chong.zhang@alibaba-inc.com",
-    description="InspireMusic: A Fundamental Music, Song and Audio Generation Toolkit",
+    description="InspireMusic: A Fundamental Music, Song and Audio Generation Framework and Toolkits",
     long_description=open(os.path.join(dirname, "README.md"), encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     license="The MIT License",
@@ -119,7 +119,7 @@ setup(
     entry_points={
         "console_scripts": [
             "inspiremusic = inspiremusic.bin.inference:main",
-            "inspiremusic-train = funasr.bin.train:main",
+            "inspiremusic-train = inspiremusic.bin.train:main",
         ]
     },
 )
