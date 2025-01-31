@@ -58,17 +58,14 @@ class LLM(torch.nn.Module):
         # 1. build text token inputs related modules
 
         if llm is None:
-
-            self.text_embedding = torch.nn.Embedding(text_token_size,
-                                                     text_encoder_input_size)
+            self.text_embedding = torch.nn.Embedding(text_token_size, text_encoder_input_size)
         else:
             self.text_embedding = llm.model.model.embed_tokens
             if frozen_input_embed:
                 print("Freezing input embedding layer")
                 for p in self.text_embedding.parameters():
                     p.requires_grad = False
-        self.chorus_embedding = torch.nn.Embedding(5,
-                                                   llm_input_size)  # intro, chorus, verse1, verse2 , outro
+        self.chorus_embedding = torch.nn.Embedding(5, llm_input_size)  # intro, chorus, verse1, verse2 , outro
 
         self.text_encoder_conf = text_encoder_conf
         self.text_encoder = self.build_encoder(text_encoder_conf)
@@ -91,8 +88,7 @@ class LLM(torch.nn.Module):
         )
 
         # 3. [Optional] build audio token related modules
-        self.speech_embedding = torch.nn.Embedding(audio_token_size,
-                                                   llm_input_size)
+        self.speech_embedding = torch.nn.Embedding(audio_token_size, llm_input_size)
         self.spk_embed_affine_layer = torch.nn.Linear(192, llm_input_size)
         self.num_codebooks = 4
         # 4. sampling method
@@ -105,8 +101,7 @@ class LLM(torch.nn.Module):
         num_samples_to_mask = int(p * B)
         if num_samples_to_mask == 0:
             num_samples_to_mask = 1
-        indices_to_mask = torch.randperm(B, device=text_token.device)[
-                          :num_samples_to_mask]
+        indices_to_mask = torch.randperm(B, device=text_token.device)[:num_samples_to_mask]
         text_token[indices_to_mask] = 0
         text_token_len[indices_to_mask] = 0
 
@@ -121,8 +116,7 @@ class LLM(torch.nn.Module):
         encoder_name = encoder_conf.pop("name", "transformer")
         model = None
         if encoder_name == "transformer":
-            from inspiremusic.transformer.encoder.conformer_encoder import \
-                ConformerEncoder
+            from inspiremusic.transformer.encoder.conformer_encoder import ConformerEncoder
             model = ConformerEncoder(
                     **encoder_conf,
                     input_size=self.input_size,
@@ -130,29 +124,25 @@ class LLM(torch.nn.Module):
                     macaron_style=False,
             )
         elif encoder_name == "conformer":
-            from inspiremusic.transformer.encoder.conformer_encoder import \
-                ConformerEncoder
+            from inspiremusic.transformer.encoder.conformer_encoder import ConformerEncoder
             model = ConformerEncoder(
                     **encoder_conf,
                     input_size=self.input_size,
             )
         elif encoder_name == "llama_encoder":
-            from inspiremusic.transformer.encoder.llama_encoder import \
-                LlamaEncoder
+            from inspiremusic.transformer.encoder.llama_encoder import LlamaEncoder
             model = LlamaEncoder(
                     **encoder_conf,
                     input_size=self.input_size,
             )
         elif encoder_name == "qwen2":
-            from inspiremusic.transformer.encoder.qwen_encoder import \
-                QwenEncoder
+            from inspiremusic.transformer.encoder.qwen_encoder import QwenEncoder
             model = QwenEncoder(
                     **encoder_conf,
                     input_size=self.input_size,
             )
         elif encoder_name == "qwen2.5":
-            from inspiremusic.transformer.encoder.qwen_encoder import \
-                QwenEncoder
+            from inspiremusic.transformer.encoder.qwen_encoder import QwenEncoder
             model = QwenEncoder(
                     **encoder_conf,
                     input_size=self.input_size,
@@ -162,11 +152,9 @@ class LLM(torch.nn.Module):
 
         return model
 
-    def encode(
-            self,
+    def encode(self,
             text: torch.Tensor,
-            text_lengths: torch.Tensor,
-    ):
+            text_lengths: torch.Tensor):
         if self.text_encoder is not None:
             encoder_out, encoder_mask = self.text_encoder(text, text_lengths,
                                                           decoding_chunk_size=1,
@@ -212,8 +200,7 @@ class LLM(torch.nn.Module):
         if "semantic_token" not in batch:
             audio_token = batch['acoustic_token'].to(device)
             audio_token_len = batch['acoustic_token_len'].to(device)
-            audio_token = audio_token.view(audio_token.size(0), -1,
-                                           self.num_codebooks)
+            audio_token = audio_token.view(audio_token.size(0), -1, self.num_codebooks)
             audio_token = audio_token[:, :, 0]
             audio_token_len = (audio_token_len / self.num_codebooks).long()
 
@@ -341,13 +328,13 @@ class LLM(torch.nn.Module):
         sos_eos_emb = self.llm_embedding.weight[self.sos_eos].reshape(1, 1, -1)
         task_id_emb = self.llm_embedding.weight[self.task_id].reshape(1, 1, -1)
 
-        if audio_token_len != 0:
+        if audio_token_len:
             audio_token = audio_token[:, :(limit_audio_prompt_len * token_rate)]
             audio_token_emb = self.speech_embedding(audio_token)
         else:
             audio_token_emb = torch.zeros(1, 0, self.llm_input_size, dtype=text.dtype).to(device)
 
-        if prompt_audio_token_len != 0:
+        if prompt_audio_token_len:
             prompt_audio_token_emb = self.speech_embedding(prompt_audio_token)
         else:
             prompt_audio_token_emb = torch.zeros(1, 0, self.llm_input_size, dtype=text.dtype).to(device)

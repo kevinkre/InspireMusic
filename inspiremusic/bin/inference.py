@@ -33,57 +33,42 @@ from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_args():
-	parser = argparse.ArgumentParser(
-		description='inference only with your model')
-	parser.add_argument('--config', required=True, help='config file')
-	parser.add_argument('--prompt_data', required=True, help='prompt data file')
-	parser.add_argument('--flow_model', default=None, required=False,
-						help='flow model file')
-	parser.add_argument('--llm_model', default=None, required=False,
-						help='flow model file')
-	parser.add_argument('--music_tokenizer', required=True,
-						help='music tokenizer model file')
-	parser.add_argument('--wavtokenizer', required=True,
-						help='wavtokenizer model file')
-	parser.add_argument('--chorus', default="random", required=False,
-						help='chorus tag generation mode, eg. random, verse, chorus, intro.')
-	parser.add_argument('--fast', action='store_true', required=False,
-						help='True: fast inference mode, without flow matching for fast inference. False: normal inference mode, with flow matching for high quality.')
-	parser.add_argument('--fp16', default=True, type=bool, required=False,
-						help='inference with fp16 model')
-	parser.add_argument('--fade_out', default=True, type=bool, required=False,
-						help='add fade out effect to generated audio')
-	parser.add_argument('--fade_out_duration', default=1.0, type=float,
-						required=False, help='fade out duration in seconds')
-	parser.add_argument('--trim', default=False, type=bool, required=False,
-						help='trim the silence ending of generated audio')
-	parser.add_argument('--format', type=str, default="wav", required=False,
-						choices=["wav", "mp3", "m4a", "flac"],
-						help='sampling rate of input audio')
-	parser.add_argument('--sample_rate', type=int, default=24000,
-						required=False,
-						help='sampling rate of input audio')
-	parser.add_argument('--output_sample_rate', type=int, default=48000,
-						required=False, choices=[24000, 48000],
-						help='sampling rate of generated output audio')
-	parser.add_argument('--min_generate_audio_seconds', type=float,
-						default=10.0, required=False,
-						help='the minimum generated audio length in seconds')
-	parser.add_argument('--max_generate_audio_seconds', type=float,
-						default=300.0, required=False,
-						help='the maximum generated audio length in seconds')
-	parser.add_argument('--gpu',
-						type=int,
-						default=-1,
-						help='gpu id for this rank, -1 for cpu')
-	parser.add_argument('--task',
-						default='text-to-music',
-						choices=['text-to-music', 'continuation', "reconstruct", "super_resolution"],
-						help='choose inference task type. text-to-music: text-to-music task. continuation: music continuation task. reconstruct: reconstruction of original music. super_resolution: convert original 24kHz music into 48kHz music.')
-	parser.add_argument('--result_dir', required=True, help='asr result file')
-	args = parser.parse_args()
-	print(args)
-	return args
+    parser = argparse.ArgumentParser(description='inference only with your model')
+    parser.add_argument('--config', required=True, help='config file')
+    parser.add_argument('--prompt_data', required=True, help='prompt data file')
+    parser.add_argument('--flow_model', default=None, required=False, help='flow model file')
+    parser.add_argument('--llm_model', default=None,required=False, help='flow model file')
+    parser.add_argument('--music_tokenizer', required=True, help='music tokenizer model file')
+    parser.add_argument('--wavtokenizer', required=True, help='wavtokenizer model file')
+    parser.add_argument('--chorus', default="random",required=False, help='chorus tag generation mode, eg. random, verse, chorus, intro.')
+    parser.add_argument('--fast', action='store_true', required=False, help='True: fast inference mode, without flow matching for fast inference. False: normal inference mode, with flow matching for high quality.')
+    parser.add_argument('--fp16', default=True, type=bool, required=False, help='inference with fp16 model')
+    parser.add_argument('--fade_out', default=True, type=bool, required=False, help='add fade out effect to generated audio')
+    parser.add_argument('--fade_out_duration', default=1.0, type=float, required=False, help='fade out duration in seconds')
+    parser.add_argument('--trim', default=False, type=bool, required=False, help='trim the silence ending of generated audio')
+    parser.add_argument('--format', type=str, default="wav", required=False,
+                        choices=["wav", "mp3", "m4a", "flac"],
+                        help='sampling rate of input audio')
+    parser.add_argument('--sample_rate', type=int, default=24000, required=False,
+                        help='sampling rate of input audio')
+    parser.add_argument('--output_sample_rate', type=int, default=48000, required=False, choices=[24000, 48000],
+                        help='sampling rate of generated output audio')
+    parser.add_argument('--min_generate_audio_seconds', type=float, default=10.0, required=False,
+                        help='the minimum generated audio length in seconds')
+    parser.add_argument('--max_generate_audio_seconds', type=float, default=30.0, required=False,
+                        help='the maximum generated audio length in seconds')
+    parser.add_argument('--gpu',
+                        type=int,
+                        default=0,
+                        help='gpu id for this rank, -1 for cpu')
+    parser.add_argument('--task',
+                        default='text-to-music',
+                        choices=['text-to-music', 'continuation', "reconstruct", "super_resolution"],
+                        help='choose inference task type. text-to-music: text-to-music task. continuation: music continuation task. reconstruct: reconstruction of original music. super_resolution: convert original 24kHz music into 48kHz music.')
+    parser.add_argument('--result_dir', required=True, help='asr result file')
+    args = parser.parse_args()
+    print(args)
+    return args
 
 
 def main():
@@ -91,10 +76,11 @@ def main():
 	logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 	os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
-	min_generate_audio_length = int(
-		args.output_sample_rate * args.min_generate_audio_seconds)
-	max_generate_audio_length = int(
-		args.output_sample_rate * args.max_generate_audio_seconds)
+	if args.fast:
+		args.output_sample_rate = 24000
+
+	min_generate_audio_length = int(args.output_sample_rate * args.min_generate_audio_seconds)
+	max_generate_audio_length = int(args.output_sample_rate * args.max_generate_audio_seconds)
 	assert args.min_generate_audio_seconds <= args.max_generate_audio_seconds
 
 	# Init inspiremusic models from configs
@@ -103,11 +89,9 @@ def main():
 	with open(args.config, 'r') as f:
 		configs = load_hyperpyyaml(f)
 
-	model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'],
-							  configs['wavtokenizer'], args.fast, args.fp16)
+	model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], args.fast, args.fp16)
 
-	model.load(args.llm_model, args.flow_model, args.music_tokenizer,
-			   args.wavtokenizer)
+	model.load(args.llm_model, args.flow_model, args.music_tokenizer, args.wavtokenizer)
 
 	if args.llm_model is None:
 		model.llm = None
@@ -117,9 +101,7 @@ def main():
 	if args.flow_model is None:
 		model.flow = None
 
-	test_dataset = Dataset(args.prompt_data,
-						   data_pipeline=configs['data_pipeline'],
-						   mode='inference', shuffle=True, partition=False)
+	test_dataset = Dataset(args.prompt_data, data_pipeline=configs['data_pipeline'], mode='inference', shuffle=True, partition=False)
 	test_data_loader = DataLoader(test_dataset, batch_size=None, num_workers=0)
 
 	del configs
@@ -138,36 +120,18 @@ def main():
 			text_token_len = batch["text_token_len"].to(device)
 
 			if "time_start" not in batch.keys():
-				batch["time_start"] = torch.randint(0,
-													args.min_generate_audio_seconds,
-													(1,)).to(torch.float64)
+				batch["time_start"] = torch.randint(0, args.min_generate_audio_seconds, (1,)).to(torch.float64)
 
 			if batch["time_start"].numpy()[0] > 300:
 				batch["time_start"] = torch.Tensor([0]).to(torch.float64)
 
 			if "time_end" not in batch.keys():
-				batch["time_end"] = torch.randint(int(
-					batch["time_start"].numpy()[
-						0] + args.min_generate_audio_seconds), int(
-					batch["time_start"].numpy()[
-						0] + args.max_generate_audio_seconds), (1,)).to(
-					torch.float64)
+				batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
 			else:
-				if (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[
-					0]) < args.min_generate_audio_seconds:
-					batch["time_end"] = torch.randint(int(
-						batch["time_start"].numpy()[
-							0] + args.min_generate_audio_seconds), int(
-						batch["time_start"].numpy()[
-							0] + args.max_generate_audio_seconds), (1,)).to(
-						torch.float64)
-				elif (batch["time_end"].numpy()[0] -
-					  batch["time_start"].numpy()[
-						  0]) > args.max_generate_audio_seconds:
-					batch["time_end"] = torch.Tensor([(batch[
-														   "time_start"].numpy()[
-														   0] + args.max_generate_audio_seconds)]).to(
-						torch.float64)
+				if (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) < args.min_generate_audio_seconds:
+					batch["time_end"] = torch.randint(int(batch["time_start"].numpy()[0] + args.min_generate_audio_seconds), int(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds), (1,)).to(torch.float64)
+				elif (batch["time_end"].numpy()[0] - batch["time_start"].numpy()[0]) > args.max_generate_audio_seconds:
+					batch["time_end"] = torch.Tensor([(batch["time_start"].numpy()[0] + args.max_generate_audio_seconds)]).to(torch.float64)
 
 			if "chorus" not in batch.keys():
 				batch["chorus"] = torch.randint(1, 5, (1,))
@@ -209,8 +173,7 @@ def main():
 					token = None
 					token_len = None
 				else:
-					token = audio_token.view(audio_token.size(0), -1, 4)[:, :,
-							0]
+					token = audio_token.view(audio_token.size(0), -1, 4)[:, :, 0]
 					token_len = audio_token_len / 4
 
 			if args.task in ['text-to-music', 'continuation']:
@@ -253,8 +216,7 @@ def main():
 
 			music_key = utts[0]
 			music_audios = []
-			music_fn = os.path.join(args.result_dir,
-									f'{music_key}.{args.format}')
+			music_fn = os.path.join(args.result_dir, f'{music_key}.{args.format}')
 			bench_start = time.time()
 
 			for model_output in model.inference(**model_input):
@@ -273,44 +235,29 @@ def main():
 				if music_audio.shape[1] >= min_generate_audio_length:
 					try:
 						if args.fade_out:
-							music_audio = fade_out(music_audio,
-												   args.output_sample_rate,
-												   args.fade_out_duration)
-
+							music_audio = fade_out(music_audio, args.output_sample_rate, args.fade_out_duration)
 						music_audio = music_audio.repeat(2, 1)
-
 						if args.format in ["wav", "flac"]:
-							torchaudio.save(music_fn, music_audio,
-											sample_rate=args.output_sample_rate,
-											encoding="PCM_S",
-											bits_per_sample=24)
+							torchaudio.save(music_fn, music_audio, sample_rate=args.output_sample_rate, encoding="PCM_S", bits_per_sample=24)
 						elif args.format in ["mp3", "m4a"]:
-							torchaudio.backend.sox_io_backend.save(
-								filepath=music_fn, src=music_audio,
-								sample_rate=args.output_sample_rate,
-								format=args.format)
+							torchaudio.backend.sox_io_backend.save(filepath=music_fn, src=music_audio, sample_rate=args.output_sample_rate, format=args.format)
 						else:
-							logging.info(
-								f"Format is not supported. Please choose from wav, mp3, m4a, flac.")
+							logging.info(f"Format is not supported. Please choose from wav, mp3, m4a, flac.")
 					except Exception as e:
 						logging.info(f"Error saving file: {e}")
 						raise
 
-					audio_duration = music_audio.shape[
-										 1] / args.output_sample_rate
+					audio_duration = music_audio.shape[1] / args.output_sample_rate
 					rtf = (bench_end - bench_start) / audio_duration
-					logging.info(
-						f"processing time: {int(bench_end - bench_start)}s, audio length: {int(audio_duration)}s, rtf: {rtf}, text prompt: {text_prompt}")
+					logging.info(f"processing time: {int(bench_end - bench_start)}s, audio length: {int(audio_duration)}s, rtf: {rtf}, text prompt: {text_prompt}")
 					f.write('{} {}\n'.format(music_key, music_fn))
 					f.flush()
 					caption_f.write('{}\t{}\n'.format(music_key, text_prompt))
 					caption_f.flush()
 				else:
-					logging.info(
-						f"Generate audio length {music_audio.shape[1]} is shorter than min_generate_audio_length.")
+					logging.info(f"Generate audio length {music_audio.shape[1]} is shorter than min_generate_audio_length.")
 			else:
-				logging.info(
-					f"Generate audio is empty, dim = {music_audio.shape[0]}.")
+				logging.info(f"Generate audio is empty, dim = {music_audio.shape[0]}.")
 	f.close()
 	logging.info('Result wav.scp saved in {}'.format(fn))
 

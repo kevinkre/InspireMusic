@@ -142,6 +142,48 @@ sudo apt-get install ffmpeg
 sudo yum install ffmpeg
 ```
 
+### Quick Start
+
+Here is a quick example inference script for music generation. 
+``` sh
+cd InspireMusic
+mkdir -p pretrained_models
+
+# Download models
+# ModelScope
+git clone https://www.modelscope.cn/iic/InspireMusic-1.5B-Long.git pretrained_models/InspireMusic-1.5B-Long
+# HuggingFace
+git clone https://huggingface.co/FunAudioLLM/InspireMusic-1.5B-Long.git pretrained_models/InspireMusic-1.5B-Long
+
+cd examples/music_generation
+# run a quick inference example
+bash infer_1.5b_long.sh
+```
+
+Here is a quick start running script to run music generation task including data preparation pipeline, model training, inference. 
+``` sh
+cd InspireMusic/examples/music_generation/
+bash run.sh
+```
+
+### One-line Inference Commands
+#### Text-to-music Task
+``` sh
+cd examples/music_generation
+# with flow matching
+python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance."
+# without flow matching
+python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast 
+```
+#### Music Continuation Task
+``` sh
+cd examples/music_generation
+# with flow matching
+python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav
+# without flow matching
+python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav --fast
+```
+
 ## Models
 ### Download Model
 
@@ -175,23 +217,6 @@ The table below presents the links to the ModelScope and Huggingface model hub. 
 ## Basic Usage
 
 At the moment, InspireMusic contains the training code and inference code for [music generation](https://github.com/FunAudioLLM/InspireMusic/tree/main/examples/music_generation). More tasks such as song generation and audio generation will be supported in future.
-
-### Quick Start
-
-Here is a quick example inference script for music generation. 
-``` sh
-cd InspireMusic
-mkdir -p pretrained_models
-git clone https://www.modelscope.cn/iic/InspireMusic-1.5B-Long.git pretrained_models/InspireMusic-1.5B-Long
-cd examples/music_generation
-bash infer_1.5b_long.sh
-```
-
-Here is a quick start running script to run music generation task including data preparation pipeline, model training, inference. 
-``` sh
-cd InspireMusic/examples/music_generation/
-bash run.sh
-```
 
 ### Training
 
