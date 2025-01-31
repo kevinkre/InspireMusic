@@ -19,18 +19,12 @@ import logging
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 import os
 import torch
-from torch.utils.data import DataLoader
 import torchaudio
 from hyperpyyaml import load_hyperpyyaml
-from tqdm import tqdm
 from inspiremusic.cli.inspiremusic import InspireMusic
-from inspiremusic.dataset.dataset import Dataset
-import random
 import time
 from inspiremusic.utils.audio_utils import trim_audio, fade_out
-from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
 
-from inspiremusic.music_tokenizer.vqvae import VQVAE
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
