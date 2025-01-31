@@ -88,11 +88,9 @@ def main():
     max_generate_audio_length = int(args.output_sample_rate * args.max_generate_audio_seconds)
     assert args.min_generate_audio_seconds <= args.max_generate_audio_seconds
     
-    # Init inspiremusic models from configs
+    # Init inspiremusic models
     use_cuda = args.gpu >= 0 and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
-    with open(args.config, 'r') as f:
-        configs = load_hyperpyyaml(f)
 
     model = InspireMusic(args.model_dir, True, False, args.fast, args.fp16)
 
@@ -104,7 +102,6 @@ def main():
     if args.flow_model is None:
         model.model.flow = None
 
-    del configs
     os.makedirs(args.result_dir, exist_ok=True)
 
     with torch.no_grad():
