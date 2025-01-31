@@ -168,20 +168,48 @@ bash run.sh
 
 ### One-line Inference Commands
 #### Text-to-music Task
+
+One-line Shell script for text-to-music task.
 ``` sh
 cd examples/music_generation
 # with flow matching
 python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance."
+# or just a quick try
+python -m inspiremusic.cli.inference
+
 # without flow matching
 python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast 
 ```
+
+Alternatively, you can run the inference with just a few lines of Python code.
+```python
+from inspiremusic.cli.inference import InspireMusicUnified
+from inspiremusic.cli.inference import set_env_variables
+if __name__ == "__main__":
+  set_env_variables()
+  model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
+  model.inference("Generate a piece of pop music.", 'text-to-music')
+```
+
 #### Music Continuation Task
+
+One-line Shell script for music continuation task.
 ``` sh
 cd examples/music_generation
 # with flow matching
 python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav
 # without flow matching
 python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav --fast
+```
+
+Alternatively, you can run the inference with just a few lines of Python code.
+```python
+from inspiremusic.cli.inference import InspireMusicUnified
+from inspiremusic.cli.inference import set_env_variables
+if __name__ == "__main__":
+  set_env_variables()
+  model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
+  model.inference("Continue to create a jazz music.", 'continuation', 'audio_prompt.wav')
 ```
 
 ## Models
