@@ -46,6 +46,7 @@ class InspireMusicUnified:
 		self.sample_rate = sample_rate
 		self.output_sample_rate = 24000 if fast else output_sample_rate
 		self.result_dir = result_dir or f"exp/{model_name}"
+		os.makedirs(self.result_dir, exist_ok=True)
 
 		self.min_generate_audio_seconds = min_generate_audio_seconds
 		self.max_generate_audio_seconds = max_generate_audio_seconds
@@ -56,9 +57,6 @@ class InspireMusicUnified:
 		use_cuda = gpu >= 0 and torch.cuda.is_available()
 		self.device = torch.device('cuda' if use_cuda else 'cpu')
 		self.model = InspireMusic(self.model_dir, load_jit=load_jit, load_onnx=load_onnx, fast=fast, fp16=fp16)
-
-		os.makedirs(result_dir, exist_ok=True)
-		self.result_dir = result_dir
 
 		logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
