@@ -121,7 +121,6 @@ class InspireMusicModel:
                     'prompt_audio_token': llm_prompt_audio_token.to(self.device),
                     'prompt_audio_token_len': torch.tensor([llm_prompt_audio_token.shape[1]], dtype=torch.int32).to(self.device),
                     'embeddings': embeddings,
-                    'sampling': 50,
                     'duration_to_gen': duration_to_gen,
                     'task': task
                     }
