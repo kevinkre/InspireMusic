@@ -176,5 +176,5 @@ class InspireMusicUnified:
 
 if __name__ == "__main__":
 	set_env_variables()
-	model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
+	model = InspireMusicUnified(None, model_name = "InspireMusic-1.5B-Long")
 	model.inference("Create an original electronic music track, incorporating uplifting and captivating melodies.", 'text-to-music')
