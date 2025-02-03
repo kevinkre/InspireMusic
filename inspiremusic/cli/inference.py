@@ -35,19 +35,17 @@ class InspireMusicUnified:
 				 fast: bool = False,
 				 fp16: bool = True,
 				 gpu: int = 0,
-				 result_dir: str = "exp/inspiremusic",
-				 ):
+				 result_dir: str = None):
 		os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu)
-		self.model_dir = model_dir
+
+		# Set model_dir or default to downloading if it doesn't exist
+		self.model_dir = model_dir or f"pretrained_models/{model_name}"
+		if not os.path.exists(self.model_dir):
+			self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=self.model_dir)
+
 		self.sample_rate = sample_rate
-
-		if fast:
-			self.output_sample_rate = 24000
-		else:
-			self.output_sample_rate = output_sample_rate
-
-		if not os.path.exists(model_dir):
-			self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=model_dir)
+		self.output_sample_rate = 24000 if fast else output_sample_rate
+		self.result_dir = result_dir or f"exp/{model_name}"
 
 		self.min_generate_audio_seconds = min_generate_audio_seconds
 		self.max_generate_audio_seconds = max_generate_audio_seconds
