@@ -9,6 +9,7 @@ from inspiremusic.cli.inspiremusic import InspireMusic
 from inspiremusic.utils.file_utils import logging
 import torch
 from inspiremusic.utils.audio_utils import trim_audio, fade_out
+from transformers import AutoModel
 
 def set_env_variables():
 	os.environ['PYTHONIOENCODING'] = 'UTF-8'
@@ -24,6 +25,7 @@ def set_env_variables():
 class InspireMusicUnified:
 	def __init__(self,
 				 model_dir: str = "../../pretrained_models/InspireMusic-1.5B-Long",
+				 model_name: str = "InspireMusic-1.5B-Long",
 				 min_generate_audio_seconds: float = 10.0,
 				 max_generate_audio_seconds: float = 30.0,
 				 sample_rate: int = 24000,
@@ -45,7 +47,7 @@ class InspireMusicUnified:
 			self.output_sample_rate = output_sample_rate
 
 		if not os.path.exists(model_dir):
-			self.model_dir = snapshot_download(model_dir)
+			self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=model_dir)
 
 		self.min_generate_audio_seconds = min_generate_audio_seconds
 		self.max_generate_audio_seconds = max_generate_audio_seconds
