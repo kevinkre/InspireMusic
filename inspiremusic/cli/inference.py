@@ -67,7 +67,7 @@ class InspireMusicUnified:
 				  text: str = "Create an original electronic music track, incorporating uplifting and captivating melodies.",
 				  task: str = 'text-to-music',
 				  audio_prompt: str = None, # audio prompt file path
-				  chorus: str = "intro",
+				  chorus: str = "verse",
 				  time_start: float = 0.0,
 				  time_end: float = 30.0,
 				  output_fn: str = "output_audio",
