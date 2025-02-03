@@ -20,10 +20,9 @@ logging.getLogger('matplotlib').setLevel(logging.WARNING)
 import os
 import torch
 import torchaudio
-from hyperpyyaml import load_hyperpyyaml
 from inspiremusic.cli.inspiremusic import InspireMusic
 import time
-from inspiremusic.utils.audio_utils import trim_audio, fade_out
+from inspiremusic.utils.audio_utils import trim_audio, fade_out, process_audio
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -105,8 +104,7 @@ def main():
     os.makedirs(args.result_dir, exist_ok=True)
 
     with torch.no_grad():
-        text = args.text
-
+        text_prompt = f"<|{args.time_start}|><|{args.chorus}|><|{args.text}|><|{args.time_end}|>"
         if args.chorus == "random":
             chorus = torch.randint(1, 5, (1,)).to(torch.int).to(device)
         elif args.chorus == "intro":
@@ -123,30 +121,22 @@ def main():
         time_start = torch.tensor([args.time_start], dtype=torch.float64, device=device)
         time_end = torch.tensor([args.time_end], dtype=torch.float64, device=device)
 
-        text_prompt = f"<|{args.time_start}|><|{args.chorus}|><|{args.text}|><|{args.time_end}|>"
+
         music_fn = os.path.join(args.result_dir, f'{args.output_fn}.{args.format}')
 
         bench_start = time.time()
 
         if args.task == 'text-to-music':
-            model_input = {"text": text, "audio_prompt": args.audio_prompt, "time_start": time_start, "time_end": time_end,
-                            "chorus": chorus, "task": args.task, "stream": False, "sampling": 50, "duration_to_gen": args.max_generate_audio_seconds, "sr": args.sample_rate}
+            model_input = {"text": args.text, "audio_prompt": args.audio_prompt, "time_start": time_start, "time_end": time_end, "chorus": chorus, "task": args.task, "stream": False, "duration_to_gen": args.max_generate_audio_seconds, "sr": args.sample_rate}
         elif args.task == 'continuation':
             if args.audio_prompt is not None:
-                audio, sample_rate = torchaudio.load(args.audio_prompt)
-                if audio.size(0) == 2:
-                    audio = audio.mean(dim=0, keepdim=True)
-                else:
-                    audio = audio
-                if sample_rate != args.sample_rate:
-                    audio = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=args.sample_rate)(audio)
+                audio, _ = process_audio(args.audio_prompt, args.sample_rate)
                 max_audio_prompt_length = int(args.max_audio_prompt_length * args.sample_rate)
                 if audio.size()[1] >= max_audio_prompt_length:
                     audio = audio[:,:max_audio_prompt_length]
                 elif audio.size()[1] < int(args.sample_rate):
                     logging.warning(f"Warning: Input prompt audio length of {audio.size()[1]/args.sample_rate}s is shorter than 1s. Please provide an audio prompt of the appropriate length and try again.")
-            model_input = {"text": text, "audio_prompt": audio, "time_start": time_start, "time_end": time_end,
-                            "chorus": chorus, "task": args.task, "stream": False, "sampling": 50, "duration_to_gen": args.max_generate_audio_seconds, "sr": args.sample_rate}
+            model_input = {"text": args.text, "audio_prompt": audio, "time_start": time_start, "time_end": time_end, "chorus": chorus, "task": args.task, "stream": False, "duration_to_gen": args.max_generate_audio_seconds, "sr": args.sample_rate}
         
         music_audios = []
         for model_output in model.cli_inference(**model_input):

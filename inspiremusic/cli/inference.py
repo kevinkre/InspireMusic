@@ -12,6 +12,7 @@ from inspiremusic.utils.audio_utils import trim_audio, fade_out
 
 def set_env_variables():
 	os.environ['PYTHONIOENCODING'] = 'UTF-8'
+	os.environ['TOKENIZERS_PARALLELISM'] = 'False'
 	current_working_dir = os.getcwd()
 	main_root = os.path.realpath(os.path.join(current_working_dir, '../../'))
 	bin_dir = os.path.join(main_root, 'inspiremusic')
@@ -63,10 +64,10 @@ class InspireMusicUnified:
 
 	@torch.inference_mode()
 	def inference(self,
-				  text: str = "Generate a piece of pop music.",
+				  text: str = "Create an original electronic music track, incorporating uplifting and captivating melodies.",
 				  task: str = 'text-to-music',
-				  audio_prompt: str = None,
-				  chorus: str = "verse",
+				  audio_prompt: str = None, # audio prompt file path
+				  chorus: str = "intro",
 				  time_start: float = 0.0,
 				  time_end: float = 30.0,
 				  output_fn: str = "output_audio",
@@ -77,22 +78,16 @@ class InspireMusicUnified:
 				  trim: bool = False,
 				  ):
 
-		# Use 'with' statement to ensure resources are properly cleaned up
 		with torch.no_grad():
-			chorus_dict = {"random": torch.randint(1, 5, (1,)).item(),
-						   "intro" : 0, "verse": 1, "chorus": 2, "outro": 4}
+			text_prompt = f"<|{time_start}|><|{chorus}|><|{text}|><|{time_end}|>"
+			chorus_dict = {"random": torch.randint(1, 5, (1,)).item(), "intro" : 0, "verse": 1, "chorus": 2, "outro": 4}
 			chorus = chorus_dict.get(chorus, 1)
 			chorus = torch.tensor([chorus], dtype=torch.int).to(self.device)
 
-			time_start_tensor = torch.tensor([time_start],
-											 dtype=torch.float64).to(
-				self.device)
-			time_end_tensor = torch.tensor([time_end], dtype=torch.float64).to(
-				self.device)
+			time_start_tensor = torch.tensor([time_start], dtype=torch.float64).to(self.device)
+			time_end_tensor = torch.tensor([time_end], dtype=torch.float64).to(self.device)
 
-			text_prompt = f"<|{time_start}|><|{chorus.item()}|><|{text}|><|{time_end}|>"
-			music_fn = os.path.join(self.result_dir,
-									f'{output_fn}.{output_format}')
+			music_fn = os.path.join(self.result_dir, f'{output_fn}.{output_format}')
 
 			bench_start = time.time()
 
@@ -105,20 +100,18 @@ class InspireMusicUnified:
 					"chorus"         : chorus,
 					"task"           : task,
 					"stream"         : False,
-					"sampling"       : 50,
 					"duration_to_gen": self.max_generate_audio_seconds,
 					"sr"             : self.sample_rate
 				}
 			elif task == 'continuation':
 				if audio_prompt is not None:
-					audio, sample_rate = torchaudio.load(audio_prompt)
-					audio = audio.mean(dim=0, keepdim=True) if audio.size(0) == 2 else audio
-					if sample_rate != self.sample_rate:
-						audio = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=self.sample_rate)(audio)
-					max_audio_prompt_length_samples = int(max_audio_prompt_length * self.sample_rate)
-					audio = audio[:, :max_audio_prompt_length_samples]  # Trimming prompt audio
+					audio, _ = process_audio(audio_prompt, self.sample_rate)
 					if audio.size(1) < self.sample_rate:
 						logging.warning("Warning: Input prompt audio length is shorter than 1s. Please provide an appropriate length audio prompt and try again.")
+						audio = None
+					else:
+						max_audio_prompt_length_samples = int(max_audio_prompt_length * self.sample_rate)
+						audio = audio[:, :max_audio_prompt_length_samples]  # Trimming prompt audio
 
 				model_input = {
 					"text"           : text,
@@ -128,7 +121,6 @@ class InspireMusicUnified:
 					"chorus"         : chorus,
 					"task"           : task,
 					"stream"         : False,
-					"sampling"       : 50,
 					"duration_to_gen": self.max_generate_audio_seconds,
 					"sr"             : self.sample_rate
 				}
@@ -185,4 +177,4 @@ class InspireMusicUnified:
 if __name__ == "__main__":
 	set_env_variables()
 	model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
-	model.inference("Generate a piece of pop music.", 'text-to-music')
+	model.inference("Create an original electronic music track, incorporating uplifting and captivating melodies.", 'text-to-music')

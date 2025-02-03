@@ -273,10 +273,9 @@ class LLM(torch.nn.Module):
             self,
             weighted_scores: torch.Tensor,
             decoded_tokens: List,
-            sampling: int,
             ignore_eos: bool = True,
     ):
-        top_ids = self.sampling(weighted_scores, decoded_tokens, sampling)
+        top_ids = self.sampling(weighted_scores, decoded_tokens)
         return top_ids
 
     @torch.inference_mode()
@@ -291,7 +290,6 @@ class LLM(torch.nn.Module):
             prompt_audio_token: torch.Tensor,
             prompt_audio_token_len: torch.Tensor,
             embeddings: List,
-            sampling: int = 50,
             duration_to_gen: float = 30,
             task: str = "continuation",
             token_rate: int = 75,
@@ -389,7 +387,7 @@ class LLM(torch.nn.Module):
 
             logp = logits.log_softmax(dim=-1)
             logp = logp.squeeze(dim=0)
-            top_ids = self.sampling_ids(logp, out_tokens, sampling, ignore_eos=i < min_len).item()
+            top_ids = self.sampling_ids(logp, out_tokens, ignore_eos=i < min_len).item()
 
             if top_ids == self.audio_token_size:
                 break

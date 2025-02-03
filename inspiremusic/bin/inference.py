@@ -27,7 +27,7 @@ from tqdm import tqdm
 from inspiremusic.cli.model import InspireMusicModel
 from inspiremusic.dataset.dataset import Dataset
 import time
-from inspiremusic.utils.audio_utils import trim_audio, fade_out
+from inspiremusic.utils.audio_utils import trim_audio, fade_out, process_audio
 from inspiremusic.utils.common import MUSIC_STRUCTURE_LABELS
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

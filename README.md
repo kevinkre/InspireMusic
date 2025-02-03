@@ -173,12 +173,12 @@ One-line Shell script for text-to-music task.
 ``` sh
 cd examples/music_generation
 # with flow matching
-python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance."
+python inspiremusic/bin/cli_inference.py --task text-to-music --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance."
 # or just a quick try
 python -m inspiremusic.cli.inference
 
 # without flow matching
-python inspiremusic/bin/cli_inference.py --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast 
+python inspiremusic/bin/cli_inference.py --task text-to-music --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast 
 ```
 
 Alternatively, you can run the inference with just a few lines of Python code.
