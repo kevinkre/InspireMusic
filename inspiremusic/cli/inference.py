@@ -39,7 +39,7 @@ class InspireMusicUnified:
 		os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu)
 
 		# Set model_dir or default to downloading if it doesn't exist
-		self.model_dir = model_dir or f"pretrained_models/{model_name}"
+		self.model_dir = model_dir or f"../../pretrained_models/{model_name}"
 		if not os.path.exists(self.model_dir):
 			self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=self.model_dir)
 
