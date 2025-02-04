@@ -62,7 +62,7 @@ class InspireMusicUnified:
 
 	@torch.inference_mode()
 	def inference(self,
-				  text: str = "Create an original electronic music track, incorporating uplifting and captivating melodies.",
+				  text: str,
 				  task: str = 'text-to-music',
 				  audio_prompt: str = None, # audio prompt file path
 				  chorus: str = "verse",
@@ -175,4 +175,4 @@ class InspireMusicUnified:
 if __name__ == "__main__":
 	set_env_variables()
 	model = InspireMusicUnified(None, model_name = "InspireMusic-1.5B-Long")
-	model.inference("Create an original electronic music track, incorporating uplifting and captivating melodies.", 'text-to-music')
+	model.inference("Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance.", 'text-to-music')
