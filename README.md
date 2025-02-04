@@ -166,19 +166,21 @@ cd InspireMusic/examples/music_generation/
 bash run.sh
 ```
 
-### One-line Inference Commands
+### One-line Inference
 #### Text-to-music Task
 
 One-line Shell script for text-to-music task.
 ``` sh
 cd examples/music_generation
 # with flow matching
-python inspiremusic/bin/cli_inference.py --task text-to-music --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance."
-# or just a quick try
+# use one-line command to get a quick try
 python -m inspiremusic.cli.inference
 
+# custom the config like the following one-line command
+python -m inspiremusic.cli.inference --task text-to-music -m "InspireMusic-1.5B-Long" -g 0 -t "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." -c verse -s 30.0 -e 60.0 -r "exp/inspiremusic" -f wav
+
 # without flow matching
-python inspiremusic/bin/cli_inference.py --task text-to-music --gpu 0 --text "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast 
+python -m inspiremusic.cli.inference --task text-to-music -g 0 -t "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance." --fast True
 ```
 
 Alternatively, you can run the inference with just a few lines of Python code.
@@ -187,8 +189,8 @@ from inspiremusic.cli.inference import InspireMusicUnified
 from inspiremusic.cli.inference import set_env_variables
 if __name__ == "__main__":
   set_env_variables()
-  model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
-  model.inference("Generate a piece of pop music.", 'text-to-music')
+  model = InspireMusicUnified(model_name = "InspireMusic-1.5B-Long")
+  model.inference("text-to-music", "Experience soothing and sensual instrumental jazz with a touch of Bossa Nova, perfect for a relaxing restaurant or spa ambiance.")
 ```
 
 #### Music Continuation Task
@@ -197,9 +199,9 @@ One-line Shell script for music continuation task.
 ``` sh
 cd examples/music_generation
 # with flow matching
-python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav
+python -m inspiremusic.cli.inference --task continuation -g 0 -a audio_prompt.wav
 # without flow matching
-python inspiremusic/bin/cli_inference.py --task continuation --gpu 0 --audio_prompt audio_prompt.wav --fast
+python -m inspiremusic.cli.inference --task continuation -g 0 -a audio_prompt.wav --fast True
 ```
 
 Alternatively, you can run the inference with just a few lines of Python code.
@@ -208,8 +210,11 @@ from inspiremusic.cli.inference import InspireMusicUnified
 from inspiremusic.cli.inference import set_env_variables
 if __name__ == "__main__":
   set_env_variables()
-  model = InspireMusicUnified("../../pretrained_models/InspireMusic-1.5B-Long")
-  model.inference("Continue to create a jazz music.", 'continuation', 'audio_prompt.wav')
+  model = InspireMusicUnified(model_name = "InspireMusic-1.5B-Long")
+  # just use audio prompt
+  model.inference("continuation", None, "audio_prompt.wav")
+  # use both text prompt and audio prompt
+  model.inference("continuation", "Continue to generate jazz music.", "audio_prompt.wav")
 ```
 
 ## Models
