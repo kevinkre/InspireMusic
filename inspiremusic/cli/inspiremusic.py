@@ -19,7 +19,6 @@ from inspiremusic.cli.frontend import InspireMusicFrontEnd
 from inspiremusic.cli.model import InspireMusicModel
 from inspiremusic.utils.file_utils import logging
 import torch
-import shutil
 
 class InspireMusic:
     def __init__(self, model_dir, load_jit=True, load_onnx=False, fast = False, fp16=True, hub="modelscope"):
@@ -27,21 +26,15 @@ class InspireMusic:
 
         if model_dir is None:
              model_dir = f"../../pretrained_models/InspireMusic-1.5B-Long"
-        download_model_dir = os.path.dirname(model_dir)
         if not os.path.isfile(f"{model_dir}/llm.pt"):
             model_name = model_dir.split("/")[-1]
             if hub == "modelscope":
                 from modelscope import snapshot_download
                 if model_name == "InspireMusic-Base":
-                    model_dir_tmp = snapshot_download(f"iic/InspireMusic", cache_dir=download_model_dir)
+                    snapshot_download(f"iic/InspireMusic", local_dir=model_dir)
                 else:
-                    model_dir_tmp = snapshot_download(f"iic/{model_name}", cache_dir=download_model_dir)
-            elif hub == "huggingface":
-                from huggingface_hub import snapshot_download
-                model_dir_tmp = snapshot_download(repo_id=f"FunAudioLLM/{model_name}", cache_dir=download_model_dir)
-            shutil.move(model_dir_tmp, model_dir)
+                    snapshot_download(f"iic/InspireMusic", local_dir=model_dir)
 
-        assert os.path.exists(f'{model_dir}/inspiremusic.yaml')
         with open('{}/inspiremusic.yaml'.format(model_dir), 'r') as f:
             configs = load_hyperpyyaml(f)
 

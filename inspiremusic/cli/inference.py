@@ -18,7 +18,6 @@ import torchaudio
 import time
 import logging
 import argparse
-import shutil
 from inspiremusic.cli.inspiremusic import InspireMusic
 from inspiremusic.utils.file_utils import logging
 import torch
@@ -56,18 +55,13 @@ class InspireMusicUnified:
         if model_dir is None:
              model_dir = f"../../pretrained_models/{model_name}"
 
-        download_model_dir = os.path.dirname(model_dir)
         if not os.path.isfile(f"{model_dir}/llm.pt"):
             if hub == "modelscope":
                 from modelscope import snapshot_download
                 if model_name == "InspireMusic-Base":
-                    model_dir_tmp = snapshot_download(f"iic/InspireMusic", cache_dir=download_model_dir)
+                    snapshot_download(f"iic/InspireMusic", local_dir=model_dir)
                 else:
-                    model_dir_tmp = snapshot_download(f"iic/{model_name}", cache_dir=download_model_dir)
-            elif hub == "huggingface":
-                from huggingface_hub import snapshot_download
-                model_dir_tmp = snapshot_download(repo_id=f"FunAudioLLM/{model_name}", cache_dir=download_model_dir)
-            shutil.move(model_dir_tmp, model_dir)
+                    snapshot_download(f"iic/{model_name}", local_dir=model_dir)
 
         self.model_dir = model_dir
 
