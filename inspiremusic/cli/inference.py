@@ -75,6 +75,7 @@ class InspireMusicUnified:
         use_cuda = gpu >= 0 and torch.cuda.is_available()
         self.device = torch.device('cuda' if use_cuda else 'cpu')
         self.model = InspireMusic(self.model_dir, load_jit=load_jit, load_onnx=load_onnx, fast=fast, fp16=fp16)
+        self.model.model.llm = self.model.model.llm.to(torch.float16)
 
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

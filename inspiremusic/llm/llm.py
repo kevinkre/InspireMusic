@@ -35,7 +35,7 @@ class SinusoidalEmbedding(nn.Module):
         emb = torch.tensor(log(10000) / (half_dim - 1), device=device)
         emb = torch.exp(torch.arange(half_dim, device=device) * -emb)
         emb = rearrange(x, "i -> i 1") * rearrange(emb, "j -> 1 j")
-        return torch.cat((emb.sin(), emb.cos()), dim=-1).to(torch.float32)
+        return torch.cat((emb.sin(), emb.cos()), dim=-1).to(torch.float16)
 
 class LLM(torch.nn.Module):
     def __init__(
