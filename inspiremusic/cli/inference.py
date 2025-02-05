@@ -55,8 +55,11 @@ class InspireMusicUnified:
 
         # Set model_dir or default to downloading if it doesn't exist
         self.model_dir = model_dir or f"../../pretrained_models/{model_name}"
-        if not os.path.exists(self.model_dir):
-            self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=self.model_dir)
+        if not os.path.isdir(self.model_dir):
+            if model_name == "InspireMusic-Base":
+                self.model_dir = snapshot_download(f"iic/InspireMusic", cache_dir=self.model_dir)
+            else:
+                self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=self.model_dir)
 
         self.sample_rate = sample_rate
         self.output_sample_rate = 24000 if fast else output_sample_rate
