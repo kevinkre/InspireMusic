@@ -114,7 +114,7 @@ cd InspireMusic
 # pynini is required by WeTextProcessing, use conda to install it as it can be executed on all platforms.
 conda install -y -c conda-forge pynini==2.1.5
 pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
-# install flash attention to speedup training
+# install flash attention to speedup training, support version 2.6.3
 pip install flash-attn --no-build-isolation
 ```
 Currently support on CUDA Version 11.x.

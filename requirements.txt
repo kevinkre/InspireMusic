@@ -35,3 +35,4 @@ transformers
 accelerate
 huggingface-hub==0.25.2
 julius
+https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
