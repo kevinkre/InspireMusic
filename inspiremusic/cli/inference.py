@@ -18,13 +18,11 @@ import torchaudio
 import time
 import logging
 import argparse
-
-from modelscope import snapshot_download
+import shutil
 from inspiremusic.cli.inspiremusic import InspireMusic
 from inspiremusic.utils.file_utils import logging
 import torch
 from inspiremusic.utils.audio_utils import trim_audio, fade_out
-from transformers import AutoModel
 
 def set_env_variables():
     os.environ['PYTHONIOENCODING'] = 'UTF-8'
@@ -50,16 +48,28 @@ class InspireMusicUnified:
                  fast: bool = False,
                  fp16: bool = True,
                  gpu: int = 0,
-                 result_dir: str = None):
+                 result_dir: str = None,
+                 hub="modelscope"):
         os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu)
 
         # Set model_dir or default to downloading if it doesn't exist
-        self.model_dir = model_dir or f"../../pretrained_models/{model_name}"
-        if not os.path.isdir(self.model_dir):
-            if model_name == "InspireMusic-Base":
-                self.model_dir = snapshot_download(f"iic/InspireMusic", cache_dir=self.model_dir)
-            else:
-                self.model_dir = snapshot_download(f"iic/{model_name}", cache_dir=self.model_dir)
+        if model_dir is None:
+             model_dir = f"../../pretrained_models/{model_name}"
+
+        download_model_dir = os.path.dirname(model_dir)
+        if not os.path.isfile(f"{model_dir}/llm.pt"):
+            if hub == "modelscope":
+                from modelscope import snapshot_download
+                if model_name == "InspireMusic-Base":
+                    model_dir_tmp = snapshot_download(f"iic/InspireMusic", cache_dir=download_model_dir)
+                else:
+                    model_dir_tmp = snapshot_download(f"iic/{model_name}", cache_dir=download_model_dir)
+            elif hub == "huggingface":
+                from huggingface_hub import snapshot_download
+                model_dir_tmp = snapshot_download(repo_id=f"FunAudioLLM/{model_name}", cache_dir=download_model_dir)
+            shutil.move(model_dir_tmp, model_dir)
+
+        self.model_dir = model_dir
 
         self.sample_rate = sample_rate
         self.output_sample_rate = 24000 if fast else output_sample_rate
