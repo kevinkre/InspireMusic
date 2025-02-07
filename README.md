@@ -21,6 +21,9 @@
 <a href="https://modelscope.cn/models/iic/InspireMusic-1.5B-Long" target="_blank">
         <img alt="Model" src="https://img.shields.io/badge/InspireMusic-Model-green"></a>
 
+<a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
+        <img alt="Space" src="https://img.shields.io/badge/InspireMusic-Space?labelColor=%20%239b8afb&label=HF_Space&color=%20%237a5af8"></a>
+
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/arXiv-Paper-lightgrey"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
@@ -76,6 +79,7 @@ InspireMusic is a fundamental AIGC toolkit and models designed for music, song, 
 <a name="What's News"></a>
 ## What's New 🔥
 
+- 2025/02: InspireMusic demo available on [HuggingFace Space](https://huggingface.co/spaces/FunAudioLLM/InspireMusic).
 - 2025/01: Open-source [InspireMusic-Base](https://modelscope.cn/models/iic/InspireMusic/summary), [InspireMusic-Base-24kHz](https://modelscope.cn/models/iic/InspireMusic-Base-24kHz/summary), [InspireMusic-1.5B](https://modelscope.cn/models/iic/InspireMusic-1.5B/summary), [InspireMusic-1.5B-24kHz](https://modelscope.cn/models/iic/InspireMusic-1.5B-24kHz/summary), [InspireMusic-1.5B-Long](https://modelscope.cn/models/iic/InspireMusic-1.5B-Long/summary) models for music generation. Models are available on both ModelScope and HuggingFace. 
 - 2024/12: Support to generate 48kHz audio with super resolution flow matching.
 - 2024/11: Welcome to preview 👉🏻 [**InspireMusic Demos**](https://iris2c.github.io/InspireMusic) 👈🏻. We're excited to share this with you and are working hard to bring even more features and models soon. Your support and feedback mean a lot to us!
