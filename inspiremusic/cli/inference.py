@@ -21,7 +21,7 @@ import argparse
 from inspiremusic.cli.inspiremusic import InspireMusic
 from inspiremusic.utils.file_utils import logging
 import torch
-from inspiremusic.utils.audio_utils import trim_audio, fade_out
+from inspiremusic.utils.audio_utils import trim_audio, fade_out, process_audio
 
 def set_env_variables():
     os.environ['PYTHONIOENCODING'] = 'UTF-8'
