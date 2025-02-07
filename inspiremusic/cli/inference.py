@@ -88,6 +88,7 @@ class InspireMusicUnified:
                   task: str = 'text-to-music',
                   text: str = None,
                   audio_prompt: str = None, # audio prompt file path
+                  instruct: str = None,
                   chorus: str = "verse",
                   time_start: float = 0.0,
                   time_end: float = 30.0,
