@@ -22,7 +22,7 @@
         <img alt="Model" src="https://img.shields.io/badge/InspireMusic-Model-green"></a>
 
 <a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Space" src="https://img.shields.io/badge/InspireMusic-Space?labelColor=%20%239b8afb&label=HF_Space&color=%20%237a5af8"></a>
+        <img alt="Space" src="https://img.shields.io/badge/HF_Space-InspireMusic?labelColor=%20%239b8afb&label=InspireMusic&color=%20%237a5af8"></a>
 
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/arXiv-Paper-lightgrey"></a>
