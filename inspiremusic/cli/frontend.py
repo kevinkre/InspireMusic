@@ -29,6 +29,7 @@ class InspireMusicFrontEnd:
                  music_tokenizer_dir: str,
                  audio_tokenizer_dir: str,
                  instruct: bool = False,
+                 dtype: str = "fp16",
                  fast: bool = False,
                  fp16: bool = True,
                  allowed_special: str = 'all'):
@@ -39,7 +40,7 @@ class InspireMusicFrontEnd:
         self.bandwidth_id = torch.tensor([0]).to(self.device)
         self.wavtokenizer = WavTokenizer.from_pretrained_feat(f"{audio_tokenizer_dir}/config.yaml", f"{audio_tokenizer_dir}/model.pt").to(self.device)
 
-        self.model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], fast, fp16)
+        self.model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], dtype, fast, fp16)
         self.model = self.model.load(llm_model, flow_model, music_tokenizer_dir, audio_tokenizer_dir)
 
         self.instruct = instruct
@@ -69,12 +70,10 @@ class InspireMusicFrontEnd:
             text = text.replace(" - ", "，")
             text = remove_bracket(text)
             text = re.sub(r'[，,]+$', '。', text)
-            texts = list(split_paragraph(text, partial(self.tokenizer.encode, allowed_special=self.allowed_special), "zh", token_max_n=80,
-                                         token_min_n=60, merge_len=20, comma_split=False))
+            texts = list(split_paragraph(text, partial(self.tokenizer.encode, allowed_special=self.allowed_special), "zh", token_max_n=80, token_min_n=60, merge_len=20, comma_split=False))
         else:
             text = spell_out_number(text, self.inflect_parser)
-            texts = list(split_paragraph(text, partial(self.tokenizer.encode, allowed_special=self.allowed_special), "en", token_max_n=80,
-                                         token_min_n=60, merge_len=20, comma_split=False))
+            texts = list(split_paragraph(text, partial(self.tokenizer.encode, allowed_special=self.allowed_special), "en", token_max_n=80, token_min_n=60, merge_len=20, comma_split=False))
         if split is False:
             return text
         return texts

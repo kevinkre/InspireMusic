@@ -44,6 +44,7 @@ class InspireMusicUnified:
                  output_sample_rate: int = 48000,
                  load_jit: bool = True,
                  load_onnx: bool = False,
+                 dtype: str = "bf16",
                  fast: bool = False,
                  fp16: bool = True,
                  gpu: int = 0,
@@ -78,8 +79,7 @@ class InspireMusicUnified:
 
         use_cuda = gpu >= 0 and torch.cuda.is_available()
         self.device = torch.device('cuda' if use_cuda else 'cpu')
-        self.model = InspireMusic(self.model_dir, load_jit=load_jit, load_onnx=load_onnx, fast=fast, fp16=fp16)
-        self.model.model.llm = self.model.model.llm.to(torch.float16)
+        self.model = InspireMusic(self.model_dir, load_jit=load_jit, load_onnx=load_onnx, dtype=dtype, fast=fast, fp16=fp16)
 
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -283,6 +283,7 @@ def main():
                  output_sample_rate = args.output_sample_rate,
                  load_jit = True,
                  load_onnx = False,
+                 dtype="fp16",
                  fast = args.fast,
                  fp16 = args.fp16,
                  gpu = args.gpu,

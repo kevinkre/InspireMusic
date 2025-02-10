@@ -17,7 +17,7 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence, unpad_sequence
 from inspiremusic.utils.common import IGNORE_ID
 from inspiremusic.transformer.label_smoothing_loss import LabelSmoothingLoss
-from inspiremusic.utils.common import th_accuracy
+from inspiremusic.utils.common import th_accuracy, DTYPES
 from torch import Tensor
 from math import log
 from einops import rearrange, reduce, repeat
@@ -50,9 +50,11 @@ class LLM(torch.nn.Module):
             length_normalized_loss: bool = True,
             lsm_weight: float = 0.0,
             frozen_input_embed: bool = False,
+            dtype: str = "fp16",
             **kwargs,
     ):
         super().__init__()
+        self.dtype = DTYPES.get(dtype, torch.float32)
         self.llm_input_size = llm_input_size
         self.audio_token_size = audio_token_size
         # 1. build text token inputs related modules
@@ -261,7 +263,7 @@ class LLM(torch.nn.Module):
                                                          audio_token_len,
                                                          seg_len)
         # 6. run lm forward
-        lm_output, lm_output_mask = self.llm(lm_input, lm_input_len.to(device))
+        lm_output, lm_output_mask = self.llm(lm_input.to(self.dtype), lm_input_len.to(device))
         logits = self.llm_decoder(lm_output)
         loss = self.criterion_ce(logits, lm_target)
 
@@ -365,10 +367,8 @@ class LLM(torch.nn.Module):
                 lm_input = torch.cat([lm_input, lm_cf_input], 0)
 
         # 4. cal min/max_length
-        min_len = duration_to_gen * token_rate
+        min_len = int(0.9 * duration_to_gen * token_rate)
         max_len = duration_to_gen * token_rate
-        logging.info(
-            f"LLM generation sequence length: {max_len}, generate audio length {duration_to_gen}s.")
 
         # 5. step by step decode
         out_tokens = []
@@ -376,7 +376,7 @@ class LLM(torch.nn.Module):
         state = None
 
         for i in range(int(max_len)):
-            y_pred, _, state = self.llm.forward_one_step(lm_input, torch.ones(lm_input.shape[0], lm_input.shape[1], device=lm_input.device).to(torch.bool), cache=state)
+            y_pred, _, state = self.llm.forward_one_step(lm_input.to(self.dtype), torch.ones(lm_input.shape[0], lm_input.shape[1], device=lm_input.device).to(torch.bool), cache=state)
             logits = self.llm_decoder(y_pred[:, -1])
             if infer_cfg:
                 # perform context free guidance
@@ -387,6 +387,10 @@ class LLM(torch.nn.Module):
 
             logp = logits.log_softmax(dim=-1)
             logp = logp.squeeze(dim=0)
+
+            if i < int(min_len):
+                logp[self.audio_token_size] = torch.tensor(float('-inf'), dtype=self.dtype)
+
             top_ids = self.sampling_ids(logp, out_tokens, ignore_eos=i < min_len).item()
 
             if top_ids == self.audio_token_size:

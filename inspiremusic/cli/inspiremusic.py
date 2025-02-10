@@ -21,7 +21,7 @@ from inspiremusic.utils.file_utils import logging
 import torch
 
 class InspireMusic:
-    def __init__(self, model_dir, load_jit=True, load_onnx=False, fast = False, fp16=True, hub="modelscope"):
+    def __init__(self, model_dir, load_jit=True, load_onnx=False, dtype = "bf16", fast = False, fp16=True, hub="modelscope"):
         instruct = True if '-Instruct' in model_dir else False
 
         if model_dir is None:
@@ -45,11 +45,12 @@ class InspireMusic:
                                           '{}/music_tokenizer/'.format(model_dir),
                                           '{}/wavtokenizer/'.format(model_dir),
                                           instruct,
+                                          dtype,
                                           fast,
                                           fp16,
                                           configs['allowed_special'])
 
-        self.model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], fast, fp16)
+        self.model = InspireMusicModel(configs['llm'], configs['flow'], configs['hift'], configs['wavtokenizer'], dtype, fast, fp16)
         self.model.load('{}/llm.pt'.format(model_dir),
                         '{}/flow.pt'.format(model_dir),
                         '{}/music_tokenizer/'.format(model_dir),

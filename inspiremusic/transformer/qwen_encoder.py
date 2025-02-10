@@ -17,11 +17,13 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from inspiremusic.utils.mask import make_pad_mask
 from inspiremusic.utils.hinter import hint_once
+from inspiremusic.utils.common import DTYPES
 
 class QwenEncoder(nn.Module):
     def __init__(
             self,
             input_size: int,
+            dtype: str = "bf16",
             pretrain_path: str = "Qwen/Qwen2.0-0.5B",
             trainable: bool = False,
             do_fusion_emb: bool = False,
@@ -30,7 +32,8 @@ class QwenEncoder(nn.Module):
         super(QwenEncoder, self).__init__()
         self.input_size = input_size
         self.trainable = trainable
-        self.model = AutoModelForCausalLM.from_pretrained(pretrain_path, device_map="cpu")
+        self.dtype = DTYPES.get(dtype, torch.float32)
+        self.model = AutoModelForCausalLM.from_pretrained(pretrain_path, device_map="auto", attn_implementation="flash_attention_2", torch_dtype=self.dtype)
         self._output_size = self.model.config.hidden_size
         self.do_fusion_emb = do_fusion_emb
         self.hidden_norm = torch.nn.LayerNorm(self._output_size)
@@ -88,12 +91,14 @@ class QwenEmbeddingEncoder(nn.Module):
     def __init__(
             self,
             input_size: int,
+            dtype: str = "bf16",
             pretrain_path: str = "Qwen/Qwen2.0-0.5B",
     ):
         super(QwenEmbeddingEncoder, self).__init__()
         self.input_size = input_size
+        self.dtype = DTYPES.get(dtype, torch.float32)
         from transformers import Qwen2ForCausalLM
-        self.model = Qwen2ForCausalLM.from_pretrained(pretrain_path, device_map="cpu", attn_implementation="flash_attention_2")
+        self.model = Qwen2ForCausalLM.from_pretrained(pretrain_path, device_map="auto", attn_implementation="flash_attention_2", torch_dtype=self.dtype)
         self._output_size = self.model.config.hidden_size
 
     def output_size(self) -> int:
@@ -135,12 +140,14 @@ class QwenInputOnlyEncoder(nn.Module):
     def __init__(
             self,
             input_size: int,
+            dtype: str = "bf16",
             pretrain_path: str = "Qwen/Qwen2.0-0.5B",
     ):
         super(QwenInputOnlyEncoder, self).__init__()
         self.input_size = input_size
+        self.dtype = DTYPES.get(dtype, torch.float32)
         from transformers import Qwen2ForCausalLM
-        model = Qwen2ForCausalLM.from_pretrained(pretrain_path, device_map="cpu", attn_implementation="flash_attention_2")
+        model = Qwen2ForCausalLM.from_pretrained(pretrain_path, device_map="auto", attn_implementation="flash_attention_2", torch_dtype=self.dtype)
         self.embed = model.model.embed_tokens
         for p in self.embed.parameters():
             p.requires_grad = False

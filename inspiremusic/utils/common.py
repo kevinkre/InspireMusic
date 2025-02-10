@@ -22,6 +22,11 @@ IGNORE_ID = -1
 
 MUSIC_STRUCTURE_LABELS = ["intro", "verse1", "chorus", "verse2", "outro"]
 
+DTYPES = {
+    "bf16": torch.bfloat16,
+    "fp16": torch.float16,
+}
+
 def pad_list(xs: List[torch.Tensor], pad_value: int):
     """Perform padding for the list of tensors.
 

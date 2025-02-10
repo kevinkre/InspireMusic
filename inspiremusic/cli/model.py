@@ -16,6 +16,7 @@ import threading
 import time
 from contextlib import nullcontext
 import uuid
+from inspiremusic.utils.common import DTYPES
 from inspiremusic.music_tokenizer.vqvae import VQVAE
 from inspiremusic.wavtokenizer.decoder.pretrained import WavTokenizer
 from torch.cuda.amp import autocast
@@ -23,21 +24,21 @@ import logging
 import torch
 import os
 
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class InspireMusicModel:
-
     def __init__(self,
                  llm: torch.nn.Module,
                  flow: torch.nn.Module,
                  music_tokenizer: torch.nn.Module,
                  wavtokenizer: torch.nn.Module,
+                 dtype: str = "fp16",
                  fast: bool = False,
                  fp16: bool = True,
                  ):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.llm = llm
+        self.dtype = DTYPES.get(dtype, torch.float32)
+        self.llm = llm.to(self.dtype)
         self.flow = flow
         self.music_tokenizer = music_tokenizer
         self.wavtokenizer = wavtokenizer
@@ -66,7 +67,7 @@ class InspireMusicModel:
     def load(self, llm_model, flow_model, hift_model, wavtokenizer_model):
         if llm_model is not None:
             self.llm.load_state_dict(torch.load(llm_model, map_location=self.device))
-            self.llm.to(self.device).eval()
+            self.llm.to(self.device).to(self.dtype).eval()
         else:
             self.llm = None
         if flow_model is not None:
@@ -110,7 +111,7 @@ class InspireMusicModel:
     def llm_job(self, text, audio_token, audio_token_len, prompt_text, llm_prompt_audio_token, embeddings, uuid, duration_to_gen, task):
         with self.llm_context:
             local_res = []
-            with autocast(enabled=self.fp16):
+            with autocast(enabled=self.fp16, dtype=self.dtype, cache_enabled=True):
                 inference_kwargs = {
                     'text': text.to(self.device),
                     'text_len': torch.tensor([text.shape[1]], dtype=torch.int32).to(self.device),
