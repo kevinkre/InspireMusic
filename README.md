@@ -22,10 +22,10 @@
         <img alt="Model" src="https://img.shields.io/badge/InspireMusic-Model-green"></a>
 
 <a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Space" src="https://img.shields.io/badge/InspireMusic-MS_Space-pink"></a>
+        <img alt="Space" src="https://img.shields.io/badge/Spaces-ModelScope-pink?labelColor=%20%237b8afb&label=Spaces&color=%20%230a5af8"></a>
 
 <a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
-        <img alt="Space" src="https://img.shields.io/badge/HF_Space-InspireMusic?labelColor=%20%239b8afb&label=InspireMusic&color=%20%237a5af8"></a>
+        <img alt="Space" src="https://img.shields.io/badge/HuggingFace-Spaces?labelColor=%20%239b8afb&label=Spaces&color=%20%237a5af8"></a>
 
 <a href="https://arxiv.org/abs/" target="_blank">
         <img alt="Paper" src="https://img.shields.io/badge/arXiv-Paper-lightgrey"></a>
@@ -96,6 +96,27 @@ InspireMusic is a fundamental AIGC toolkit and models designed for music, song, 
 > To explore the performance, please refer to [InspireMusic Demo Page](https://iris2c.github.io/InspireMusic). We will open-source better & larger models soon.
 
 InspireMusic is a unified music, song and audio generation framework through the audio tokenization and detokenization process integrated with a large autoregressive transformer. The original motive of this toolkit is to empower the common users to innovate soundscapes and enhance euphony in research through music, song, and audio crafting. The toolkit provides both inference and training code for AI generative models that create high-quality music. Featuring a unified framework, InspireMusic incorporates autoregressive Transformer and conditional flow-matching modeling (CFM), allowing for the controllable generation of music, songs, and audio with both textual and structural music conditioning, as well as neural audio tokenizers. Currently, the toolkit supports text-to-music generation and plans to expand its capabilities to include text-to-song and text-to-audio generation in the future.
+
+<p align="center">
+  <table>
+    <tr>
+       <td style="text-align:center;">
+      <img alt="Light" src="asset/InspireMusic.png" width="100%" />
+    </tr>
+    <tr>
+      <td style="text-align:center;">
+<b>Figure 1.</b> An overview of the InspireMusic framework.
+			We introduce InspireMusic, a unified framework for music, song and audio generation, capable of producing 48kHz long-form audio. 
+			InspireMusic employs an autoregressive transformer to generate music tokens in response to textual input. Complementing this, an ODE-based diffusion model, specifically flow matching, is utilized to reconstruct latent features from these generated music tokens.
+			Then a vocoder generates audio waveforms from the reconstructed features.
+			for input text, an ODE-based diffusion model, flow matching,
+			to reconstruct latent features from the generated music tokens,
+			and a vocoder to generate audio waveforms. InspireMusic is capable of text-to-music, music continuation, music reconstruction, and music super resolution tasks.
+			It employs WavTokenizer as an audio tokenizer to convert 24kHz audio into 75Hz discrete tokens, while HifiCodec serves as a music tokenizer, transforming 48kHz audio into 150Hz latent features compatible with the flow matching model.
+      </td>
+    </tr>
+  </table>
+</p>
 
 ## Installation
 
