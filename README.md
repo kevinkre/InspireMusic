@@ -21,7 +21,7 @@
 <a href="https://modelscope.cn/models/iic/InspireMusic-1.5B-Long" target="_blank">
         <img alt="Model" src="https://img.shields.io/badge/InspireMusic-Model-green"></a>
 
-<a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
+<a href="https://modelscope.cn/studios/iic/InspireMusic/summary" target="_blank">
         <img alt="Space" src="https://img.shields.io/badge/Spaces-ModelScope-pink?labelColor=%20%237b8afb&label=Spaces&color=%20%230a5af8"></a>
 
 <a href="https://huggingface.co/spaces/FunAudioLLM/InspireMusic" target="_blank">
