@@ -44,7 +44,7 @@ class InspireMusicUnified:
                  output_sample_rate: int = 48000,
                  load_jit: bool = True,
                  load_onnx: bool = False,
-                 dtype: str = "bf16",
+                 dtype: str = "fp16",
                  fast: bool = False,
                  fp16: bool = True,
                  gpu: int = 0,
@@ -195,6 +195,12 @@ class InspireMusicUnified:
 
             else:
                 logging.error(f"Generated audio length is shorter than minimum required audio length.")
+        if music_fn:
+            if os.path.exists(music_fn):
+                logging.info(f"Generated audio file {music_fn} is saved.")
+                return music_fn
+            else:
+                logging.error(f"{music_fn} does not exist.")
 
 def get_args():
     parser = argparse.ArgumentParser(description='Run inference with your model')

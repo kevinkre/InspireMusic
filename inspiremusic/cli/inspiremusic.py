@@ -21,7 +21,7 @@ from inspiremusic.utils.file_utils import logging
 import torch
 
 class InspireMusic:
-    def __init__(self, model_dir, load_jit=True, load_onnx=False, dtype = "bf16", fast = False, fp16=True, hub="modelscope"):
+    def __init__(self, model_dir, load_jit=True, load_onnx=False, dtype = "fp16", fast = False, fp16=True, hub="modelscope"):
         instruct = True if '-Instruct' in model_dir else False
 
         if model_dir is None:

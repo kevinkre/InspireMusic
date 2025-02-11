@@ -13,7 +13,7 @@
 [//]: # (</p>)
 
 <p align="center">
- <a href="https://iris2c.github.io/InspireMusic" target="_blank">
+ <a href="https://funaudiollm.github.io/inspiremusic" target="_blank">
         <img alt="Demo" src="https://img.shields.io/badge/Demo%20👈🏻-InspireMusic?labelColor=%20%23FDB062&label=InspireMusic&color=%20%23f79009"></a>
 <a href="https://github.com/FunAudioLLM/InspireMusic" target="_blank">
         <img alt="Code" src="https://img.shields.io/badge/Code%20⭐-InspireMusic?labelColor=%20%237372EB&label=InspireMusic&color=%20%235462eb"></a>
@@ -77,11 +77,11 @@ InspireMusic is a fundamental AIGC toolkit and models designed for music, song, 
 - A unified framework for music/song/audio generation. Controllable with text prompts, music genres, music structures, etc.
 - Support music generation tasks with high audio quality, with available sampling rates of 24kHz, 48kHz. 
 - Support long-form audio generation.
-- Convenient fine-tuning and inference. Support mixed precision training (FP16, BF16, FP32). Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily fine-tune their music generation models.
+- Convenient fine-tuning and inference. Support mixed precision training (BF16, FP16/FP32). Provide convenient fine-tuning and inference scripts and strategies, allowing users to easily fine-tune their music generation models.
 
 <a name="What's News"></a>
 ## What's New 🔥
-- 2025/02: InspireMusic demo is available on [ModelScope Space](https://modelscope.cn/studios/iic/InspireMusic/summary) and [HuggingFace Space](https://huggingface.co/spaces/FunAudioLLM/InspireMusic).
+- 2025/02: Online demo is available on [ModelScope Space](https://modelscope.cn/studios/iic/InspireMusic/summary) and [HuggingFace Space](https://huggingface.co/spaces/FunAudioLLM/InspireMusic).
 - 2025/01: Open-source [InspireMusic-Base](https://modelscope.cn/models/iic/InspireMusic/summary), [InspireMusic-Base-24kHz](https://modelscope.cn/models/iic/InspireMusic-Base-24kHz/summary), [InspireMusic-1.5B](https://modelscope.cn/models/iic/InspireMusic-1.5B/summary), [InspireMusic-1.5B-24kHz](https://modelscope.cn/models/iic/InspireMusic-1.5B-24kHz/summary), [InspireMusic-1.5B-Long](https://modelscope.cn/models/iic/InspireMusic-1.5B-Long/summary) models for music generation. Models are available on both ModelScope and HuggingFace. 
 - 2024/12: Support to generate 48kHz audio with super resolution flow matching.
 - 2024/11: Welcome to preview 👉🏻 [**InspireMusic Demos**](https://iris2c.github.io/InspireMusic) 👈🏻. We're excited to share this with you and are working hard to bring even more features and models soon. Your support and feedback mean a lot to us!
@@ -327,7 +327,7 @@ bash infer.sh
 
 Here is an example code to run inference with normal mode, i.e., with flow matching model for text-to-music and music continuation tasks.
 ```sh
-pretrained_model_dir = "./pretrained_models/InspireMusic/"
+pretrained_model_dir = "pretrained_models/InspireMusic/"
 for task in 'text-to-music' 'continuation'; do
   python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
@@ -346,7 +346,7 @@ done
 
 Here is an example code to run inference with fast mode, i.e., without flow matching model for text-to-music and music continuation tasks.
 ```sh
-pretrained_model_dir = "./pretrained_models/InspireMusic/"
+pretrained_model_dir = "pretrained_models/InspireMusic/"
 for task in 'text-to-music' 'continuation'; do
   python inspiremusic/bin/inference.py --task $task \
       --gpu 0 \
@@ -373,12 +373,12 @@ done
     - [x] Support to generate 48kHz
     - [x] 75Hz InspireMusic-1.5B model for music generation
     - [x] 75Hz InspireMusic-1.5B-Long model for long-form music generation
-
-- [ ] 2025/02
+    
+- [ ] 2025/03
     - [ ] Support song generation task
     - [ ] 75Hz InspireSong model for song generation
 
-- [ ] 2025/03
+- [ ] 2025/04
     - [ ] Support audio generation task
     - [ ] 75Hz InspireAudio model for music and audio generation
 
@@ -387,7 +387,7 @@ done
     - [ ] 25Hz InspireMusic model
     - [ ] Support 48kHz stereo audio
     - [ ] Streaming inference mode support
-    - [ ] Support more instruction mode, multi-lingual instructions
+    - [ ] Support more diverse instruction mode, multi-lingual instructions
     - [ ] InspireSong trained with more multi-lingual data
     - [ ] More...
 
