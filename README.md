@@ -364,7 +364,7 @@ for task in 'text-to-music' 'continuation'; do
 done
 ```
 #### Execution Time
-On an H800 GPU, InspireMusic-1.5B-Long generating 30s audio takes 48 seconds.
+On an H800 GPU, InspireMusic-1.5B-Long generating 30s audio takes around 48 seconds.
 
 ## Roadmap
 
