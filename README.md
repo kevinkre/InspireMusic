@@ -363,8 +363,10 @@ for task in 'text-to-music' 'continuation'; do
       --max_generate_audio_seconds 30 
 done
 ```
-#### Execution Time
-On an H800 GPU, InspireMusic-1.5B-Long generating 30s audio takes around 48 seconds.
+#### Hardware & Execution Time
+On an H800 GPU, InspireMusic-1.5B-Long can generate 30 seconds audio in approximately 48 seconds, RTF around 1.6~1.8.
+
+For normal mode, we recommend using hardware with at least 24GB of GPU memory for optimal inference. For fast mode, 16GB GPU memory is enough.
 
 ## Roadmap
 
